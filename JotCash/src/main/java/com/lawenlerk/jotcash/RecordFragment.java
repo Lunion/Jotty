@@ -3,6 +3,7 @@ package com.lawenlerk.jotcash;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -139,6 +140,7 @@ public class RecordFragment extends Fragment {
     }
 
     private void updateDateRadioGroup() {
+        Log.d("Debug", "updateDateRadioGroup()");
         Calendar today = Calendar.getInstance();
 
         Calendar yesterday = Calendar.getInstance();

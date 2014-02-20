@@ -13,11 +13,11 @@
         android:layout_marginBottom="@dimen/vertical_margin_min"
         android:inputType="numberDecimal"
         android:ems="10"
-        android:id="@+id/editText"
+        android:id="@+id/etAmount"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_toLeftOf="@+id/switch1"
+        android:layout_toLeftOf="@+id/swExpenseIncome"
         android:hint="@string/amount" />
 
     <Switch
@@ -25,8 +25,8 @@
         android:layout_height="@dimen/touchables_min_height"
         android:layout_marginTop="@dimen/vertical_margin_min"
         android:layout_marginBottom="@dimen/vertical_margin_min"
-        android:id="@+id/switch1"
-        android:layout_alignBottom="@+id/editText"
+        android:id="@+id/swExpenseIncome"
+        android:layout_alignBottom="@+id/etAmount"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:textOn="@string/income"
@@ -40,7 +40,7 @@
         android:layout_height="@dimen/touchables_min_height"
         android:layout_marginTop="@dimen/vertical_margin_min"
         android:layout_marginBottom="@dimen/vertical_margin_min"
-        android:layout_below="@+id/editText"
+        android:layout_below="@+id/etAmount"
         android:orientation="horizontal">
 
         <RadioButton
@@ -79,16 +79,32 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/rgDate" />
 
-    <TextView
+
+    <RelativeLayout
+        android:id="@+id/rlChooseCategory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/vertical_margin_min"
-        android:layout_marginBottom="@dimen/vertical_margin_min"
-        android:text="@string/choose_category"
-        android:id="@+id/tvChooseCategory"
-        android:layout_below="@+id/btDatePicker"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_below="@+id/btDatePicker">
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/touchables_min_height"
+            android:layout_marginTop="@dimen/vertical_margin_min"
+            android:layout_marginBottom="@dimen/vertical_margin_min"
+            android:hint="@string/choose_category"
+            android:id="@+id/etChooseCategory"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/vertical_margin_min"
+            android:layout_marginBottom="@dimen/vertical_margin_min"
+            android:layout_alignRight="@id/etChooseCategory"
+            android:background="@drawable/ic_action_send_now"
+            android:layout_centerVertical="true" />
+    </RelativeLayout>
 
     <ListView
         android:layout_width="wrap_content"
@@ -97,7 +113,8 @@
         android:layout_marginBottom="@dimen/vertical_margin_min"
         android:layout_alignParentBottom="true"
         android:id="@+id/lvCategory"
-        android:layout_below="@+id/tvChooseCategory"
+        android:layout_below="@id/rlChooseCategory"
         android:layout_centerHorizontal="true" />
+
 
 </RelativeLayout>

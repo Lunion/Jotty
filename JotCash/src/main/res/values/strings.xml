@@ -11,7 +11,7 @@
     <string name="today">Today</string>
     <string name="custom">Custom</string>
     <string name="date_picker_placeholder">Date Picker</string>
-    <string name="choose_category">Choose category to finish:</string>
+    <string name="choose_category">Add or choose category to finish</string>
     <string name="date_format">EEEE, d MMMM yyyy</string>
 
 </resources>
