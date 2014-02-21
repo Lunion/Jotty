@@ -1,1 +1,1 @@
-include ':JotCash'
+include ':JotCash', ':libraries:swipelistview'

@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/JotCash.iml" filepath="$PROJECT_DIR$/JotCash.iml" />
       <module fileurl="file://$PROJECT_DIR$/JotCash/JotCash-JotCash.iml" filepath="$PROJECT_DIR$/JotCash/JotCash-JotCash.iml" />
+      <module fileurl="file://$PROJECT_DIR$/libraries/swipelistview/swipelistview.iml" filepath="$PROJECT_DIR$/libraries/swipelistview/swipelistview.iml" />
     </modules>
   </component>
 </project>
