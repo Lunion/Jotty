@@ -14,5 +14,6 @@
     <string name="choose_category">Add or choose category to finish</string>
     <string name="date_format">EEEE, d MMMM yyyy</string>
     <string name="loading">Loading…</string>
+    <string name="action_add_transaction">Add Transaction</string>
 
 </resources>

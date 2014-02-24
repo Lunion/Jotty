@@ -1,18 +1,64 @@
 package com.lawenlerk.jotcash;
 
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import java.util.Calendar;
 
 public class MainActivity extends ActionBarActivity implements RecordFragment.OnDatePickerButtonClickedListener, DatePickerFragment.OnDatePickerDoneListener {
     RecordFragment recordFragment;
+    OverviewFragment overviewFragment;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+   @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_add_transaction:
+                launchRecordFragment();
+                return true;
+            case R.id.action_settings:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void launchRecordFragment() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        recordFragment = new RecordFragment();
+        fragmentTransaction.add(R.id.fragment_container, recordFragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
-        recordFragment = (RecordFragment) getSupportFragmentManager().findFragmentById(R.id.recordFragment);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        overviewFragment = new OverviewFragment();
+        fragmentTransaction.add(R.id.fragment_container, overviewFragment);
+        fragmentTransaction.commit();
+
+        /*
+        recordFragment = new RecordFragment();
+        fragmentTransaction.add(R.id.fragment_container, recordFragment);
+        fragmentTransaction.commit();
+        */
     }
 
     @Override

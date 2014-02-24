@@ -2,7 +2,6 @@ package com.lawenlerk.jotcash;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -11,13 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.RadioButton;
 
-import com.fortysevendeg.swipelistview.BaseSwipeListViewListener;
-import com.fortysevendeg.swipelistview.SwipeListView;
-
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -27,23 +24,16 @@ import java.util.List;
 public class RecordFragment extends Fragment {
     public Calendar date;
     OnDatePickerButtonClickedListener mCallback;
-
-    public interface OnDatePickerButtonClickedListener {
-        public void onDatePickerClicked();
-    }
-
     View view;
-
     EditText etAmount;
     RadioButton rbYesterday;
     RadioButton rbToday;
     RadioButton rbCustom;
     Button btDatePicker;
-
-    SwipeListView swipeListView;
+    ListView lvCategoryPicker;
+    ImageButton ibCategoryAdd;
     private CategoryAdapter adapter;
     private List<CategoryItem> data;
-
     private ProgressDialog progressDialog;
 
     @Override
@@ -100,69 +90,19 @@ public class RecordFragment extends Fragment {
             });
 
             // Set up category list
-            swipeListView = (SwipeListView) view.findViewById(R.id.slvCategoryList);
 
-            data = new ArrayList<CategoryItem>();
-            adapter = new CategoryAdapter(this.getActivity(), data);
 
-            swipeListView.setSwipeListViewListener(new BaseSwipeListViewListener() {
+            // Set up category adder
+
+
+            // Set up category image button
+            ibCategoryAdd = (ImageButton) view.findViewById(R.id.ibCategoryAdd);
+            ibCategoryAdd.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onOpened(int position, boolean toRight) {
-                    super.onOpened(position, toRight);
-                }
-
-                @Override
-                public void onClosed(int position, boolean fromRight) {
-                    super.onClosed(position, fromRight);
-                }
-
-                @Override
-                public void onListChanged() {
-                    super.onListChanged();
-                }
-
-                @Override
-                public void onMove(int position, float x) {
-                    super.onMove(position, x);
-                }
-
-                @Override
-                public void onStartOpen(int position, int action, boolean right) {
-                    super.onStartOpen(position, action, right);
-                }
-
-                @Override
-                public void onStartClose(int position, boolean right) {
-                    super.onStartClose(position, right);
-                }
-
-                @Override
-                public void onClickFrontView(int position) {
-                    super.onClickFrontView(position);
-                }
-
-                @Override
-                public void onClickBackView(int position) {
-                    super.onClickBackView(position);
-                }
-
-                @Override
-                public void onDismiss(int[] reverseSortedPositions) {
-                    for (int position : reverseSortedPositions) {
-                        data.remove(position);
-                    }
-                    adapter.notifyDataSetChanged();
+                public void onClick(View view) {
                 }
             });
 
-            swipeListView.setAdapter(adapter);
-
-            new ListCategoryTask().execute();
-
-            progressDialog = new ProgressDialog(this.getActivity());
-            progressDialog.setMessage(getString(R.string.loading));
-            progressDialog.setCancelable(false);
-            progressDialog.show();
 
             setDate(Calendar.getInstance());
         }
@@ -170,36 +110,13 @@ public class RecordFragment extends Fragment {
         return view;
     }
 
-    public class ListCategoryTask extends AsyncTask<Void, Void, List<CategoryItem>> {
-        protected List<CategoryItem> doInBackground(Void... args) {
-            List<CategoryItem> data = new ArrayList<CategoryItem>();
-
-            String[] stringArray = {"Food", "Taxi"};
-
-            for (String aStringArray : stringArray) {
-                CategoryItem item = new CategoryItem();
-                item.setName(aStringArray);
-                data.add(item);
-                Log.d("OPERATION", "Adding " + aStringArray);
-            }
-
-            return data;
-        }
-        protected void onPostExecute(List<CategoryItem> result) {
-            data.clear();
-            data.addAll(result);
-            adapter.notifyDataSetChanged();
-            if (progressDialog != null) {
-                progressDialog.dismiss();
-                progressDialog = null;
-            }
-            
-
-        }
-    }
-
     public Calendar getDate() {
         return date;
+    }
+
+    public void setDate(Calendar date) {
+        this.date = date;
+        updateDate();
     }
 
     private void onDateRadioButtonClicked(View view) {
@@ -225,11 +142,6 @@ public class RecordFragment extends Fragment {
                 }
                 break;
         }
-    }
-
-    public void setDate(Calendar date) {
-        this.date = date;
-        updateDate();
     }
 
     public void setDate(int year, int month, int dayOfMonth) {
@@ -269,6 +181,10 @@ public class RecordFragment extends Fragment {
     private boolean sameDay(Calendar a, Calendar b) {
         // Checks if a and b occur on the same day
         return a.get(Calendar.YEAR) == b.get(Calendar.YEAR) && a.get(Calendar.DAY_OF_YEAR) == b.get(Calendar.DAY_OF_YEAR);
+    }
+
+    public interface OnDatePickerButtonClickedListener {
+        public void onDatePickerClicked();
     }
 
 }
