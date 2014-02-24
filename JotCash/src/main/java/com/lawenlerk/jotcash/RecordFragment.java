@@ -1,6 +1,7 @@
 package com.lawenlerk.jotcash;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,11 +9,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.RadioButton;
 
 import com.fortysevendeg.swipelistview.BaseSwipeListViewListener;
@@ -29,6 +27,7 @@ import java.util.List;
 public class RecordFragment extends Fragment {
     public Calendar date;
     OnDatePickerButtonClickedListener mCallback;
+
     public interface OnDatePickerButtonClickedListener {
         public void onDatePickerClicked();
     }
@@ -40,7 +39,12 @@ public class RecordFragment extends Fragment {
     RadioButton rbToday;
     RadioButton rbCustom;
     Button btDatePicker;
+
     SwipeListView swipeListView;
+    private CategoryAdapter adapter;
+    private List<CategoryItem> data;
+
+    private ProgressDialog progressDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -99,7 +103,7 @@ public class RecordFragment extends Fragment {
             swipeListView = (SwipeListView) view.findViewById(R.id.slvCategoryList);
 
             data = new ArrayList<CategoryItem>();
-            adapter = new CategoryAdapter(this, data);
+            adapter = new CategoryAdapter(this.getActivity(), data);
 
             swipeListView.setSwipeListViewListener(new BaseSwipeListViewListener() {
                 @Override
@@ -153,6 +157,13 @@ public class RecordFragment extends Fragment {
 
             swipeListView.setAdapter(adapter);
 
+            new ListCategoryTask().execute();
+
+            progressDialog = new ProgressDialog(this.getActivity());
+            progressDialog.setMessage(getString(R.string.loading));
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+
             setDate(Calendar.getInstance());
         }
 
@@ -160,7 +171,31 @@ public class RecordFragment extends Fragment {
     }
 
     public class ListCategoryTask extends AsyncTask<Void, Void, List<CategoryItem>> {
-        protected List<CategoryItem>
+        protected List<CategoryItem> doInBackground(Void... args) {
+            List<CategoryItem> data = new ArrayList<CategoryItem>();
+
+            String[] stringArray = {"Food", "Taxi"};
+
+            for (String aStringArray : stringArray) {
+                CategoryItem item = new CategoryItem();
+                item.setName(aStringArray);
+                data.add(item);
+                Log.d("OPERATION", "Adding " + aStringArray);
+            }
+
+            return data;
+        }
+        protected void onPostExecute(List<CategoryItem> result) {
+            data.clear();
+            data.addAll(result);
+            adapter.notifyDataSetChanged();
+            if (progressDialog != null) {
+                progressDialog.dismiss();
+                progressDialog = null;
+            }
+            
+
+        }
     }
 
     public Calendar getDate() {

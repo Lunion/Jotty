@@ -99,6 +99,7 @@
             android:id="@+id/slvCategoryList"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
             android:layout_above="@+id/rlCategorySearch"
             swipe:swipeActionLeft="dismiss"
             swipe:swipeActionRight="dismiss"
