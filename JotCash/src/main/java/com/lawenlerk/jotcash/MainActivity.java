@@ -1,16 +1,24 @@
 package com.lawenlerk.jotcash;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.lawenlerk.jotcash.provider.EntriesProvider;
+
 import java.util.Calendar;
 
-public class MainActivity extends ActionBarActivity implements RecordFragment.OnDatePickerButtonClickedListener, DatePickerFragment.OnDatePickerDoneListener {
+public class MainActivity extends ActionBarActivity implements
+        LoaderManager.LoaderCallbacks<Cursor>,
+        RecordFragment.OnDatePickerButtonClickedListener,
+        DatePickerFragment.OnDatePickerDoneListener {
     RecordFragment recordFragment;
     OverviewFragment overviewFragment;
 
@@ -80,4 +88,17 @@ public class MainActivity extends ActionBarActivity implements RecordFragment.On
         recordFragment.setDate(year, month, day);
     }
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        android.support.v4.content.CursorLoader cursorLoader = new android.support.v4.content.CursorLoader(this, EntriesProvider.CONTENT_URI, null, null, null, null);
+        return cursorLoader;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> cursorLoader) {
+    }
 }

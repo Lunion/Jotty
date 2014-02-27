@@ -1,5 +1,4 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:swipe="http://schemas.android.com/apk/res-auto"
     android:id="@+id/record_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -16,7 +15,7 @@
         <EditText
             android:id="@+id/etAmount"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/touchables_min_height"
+            android:layout_height="@dimen/touchables_min_length"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
@@ -31,7 +30,7 @@
         <Switch
             android:id="@+id/swExpenseIncome"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/touchables_min_height"
+            android:layout_height="@dimen/touchables_min_length"
             android:layout_alignBottom="@+id/etAmount"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
@@ -45,7 +44,7 @@
         <RadioGroup
             android:id="@+id/rgDate"
             android:layout_width="fill_parent"
-            android:layout_height="@dimen/touchables_min_height"
+            android:layout_height="@dimen/touchables_min_length"
             android:layout_below="@+id/etAmount"
             android:layout_marginBottom="@dimen/vertical_margin_min"
             android:layout_marginTop="@dimen/vertical_margin_min"
@@ -54,14 +53,14 @@
             <RadioButton
                 android:id="@+id/rbYesterday"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/touchables_min_height"
+                android:layout_height="@dimen/touchables_min_length"
                 android:layout_weight="1"
                 android:text="@string/yesterday" />
 
             <RadioButton
                 android:id="@+id/rbToday"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/touchables_min_height"
+                android:layout_height="@dimen/touchables_min_length"
                 android:layout_weight="1"
                 android:checked="true"
                 android:text="@string/today" />
@@ -69,7 +68,7 @@
             <RadioButton
                 android:id="@+id/rbCustom"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/touchables_min_height"
+                android:layout_height="@dimen/touchables_min_length"
                 android:layout_weight="1"
                 android:text="@string/custom" />
 
@@ -79,13 +78,22 @@
             android:id="@+id/btDatePicker"
             style="@android:style/Widget.Holo.Light.Spinner"
             android:layout_width="fill_parent"
-            android:layout_height="@dimen/touchables_min_height"
+            android:layout_height="@dimen/touchables_min_length"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_below="@+id/rgDate"
             android:layout_marginBottom="@dimen/vertical_margin_min"
             android:layout_marginTop="@dimen/vertical_margin_min"
             android:text="@string/date_picker_placeholder" />
+
+        <EditText
+            android:hint="Description"
+            android:id="@+id/etDescription"
+            android:layout_below="@+id/btDatePicker"
+            android:layout_width="fill_parent"
+            android:layout_marginBottom="@dimen/vertical_margin_min"
+            android:layout_marginTop="@dimen/vertical_margin_min"
+            android:layout_height="@dimen/touchables_min_length" />
     </RelativeLayout>
 
 
@@ -97,39 +105,39 @@
         android:layout_below="@+id/rlTopSection">
 
         <ListView
-            android:layout_alignParentTop="true"
             android:id="@+id/lvCategoryPicker"
-            android:layout_above="@+id/rlCategorySearch"
             android:layout_width="fill_parent"
-            android:layout_height="0dp">
+            android:layout_height="0dp"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:layout_above="@+id/rlCategorySearch"
+            android:layout_alignParentTop="true">
 
         </ListView>
 
         <RelativeLayout
             android:id="@+id/rlCategorySearch"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/touchables_min_length"
             android:layout_alignParentBottom="true">
 
             <EditText
                 android:id="@+id/etCategorySearch"
                 android:layout_width="fill_parent"
-                android:layout_height="@dimen/touchables_min_height"
-                android:layout_marginBottom="@dimen/vertical_margin_min"
-                android:layout_marginTop="@dimen/vertical_margin_min"
+                android:layout_height="@dimen/touchables_min_length"
                 android:hint="@string/choose_category"
-                android:paddingRight="@dimen/edit_text_padding"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/touchables_min_length"
+                android:background="@android:color/white"
                 android:singleLine="true" />
 
             <ImageButton
                 android:id="@+id/ibCategoryAdd"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/touchables_min_length"
+                android:layout_height="fill_parent"
                 android:layout_alignRight="@+id/etCategorySearch"
                 android:layout_centerVertical="true"
-                android:layout_marginBottom="@dimen/vertical_margin_min"
-                android:layout_marginTop="@dimen/vertical_margin_min"
-                android:background="@drawable/ic_action_send_now" />
+                android:background="@drawable/imagebutton_highlight"
+                android:src="@drawable/ic_action_send_now" />
 
         </RelativeLayout>
     </RelativeLayout>

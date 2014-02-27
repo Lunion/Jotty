@@ -3,23 +3,45 @@ package com.lawenlerk.jotcash;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.SimpleCursorAdapter;
+
+import com.lawenlerk.jotcash.database.TransactionsTable;
 
 /**
  * Created by enlerklaw on 2/24/14.
  */
 public class OverviewFragment extends Fragment {
-
+    View view;
+    ListView lvTransactions;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return super.onCreateView(inflater, container, savedInstanceState);
+        view = inflater.inflate(R.layout.overview_fragment, container, false);
+        ProgressBar progressBar = new ProgressBar(getActivity());
+        progressBar.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
+        progressBar.setIndeterminate(true);
+        lvTransactions = (ListView) view.findViewById(R.id.lvTransactions);
+        lvTransactions.setEmptyView(progressBar);
+
+        ViewGroup root = (ViewGroup) view.findViewById(android.R.id.content);
+        root.addView(progressBar);
+
+        String[] fromColumns = {TransactionsTable.AMOUNT};
+        int[] toViews = {android.R.id.text1};
+
+        SimpleCursorAdapter mAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, fromColumns, toViews, 0);
+
+
+
+        return view;
     }
 
     @Override
