@@ -78,23 +78,18 @@ public class EntriesProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
             case TRANSACTIONS:
                 queryBuilder.setTables(TransactionsTable.TABLE_NAME + " JOIN " + CategoriesTable.TABLE_NAME + " ON (" + TransactionsTable.TABLE_NAME + "." + TransactionsTable.CATEGORY_ID + " = " + CategoriesTable.TABLE_NAME + "." + CategoriesTable.ID + ")");
-                if (TextUtils.isEmpty(sortOrder)) {
-                    sortOrder = "_ID ASC";
-                }
                 break;
             case TRANSACTION_ID:
                 queryBuilder.setTables(TransactionsTable.TABLE_NAME + " JOIN " + CategoriesTable.TABLE_NAME + " ON (" + TransactionsTable.TABLE_NAME + "." + TransactionsTable.CATEGORY_ID + " = " + CategoriesTable.TABLE_NAME + "." + CategoriesTable.ID + ")");
-                selection = selection + "_ID = " + uri.getLastPathSegment();
+                selection = selection + " " + TransactionsTable.ID + " = " + uri.getLastPathSegment();
                 break;
             case CATEGORIES:
                 queryBuilder.setTables(CategoriesTable.TABLE_NAME);
-                if (TextUtils.isEmpty(sortOrder)) {
-                    sortOrder = "_ID ASC";
-                }
+                selection = CategoriesTable.ID + " AS _id";
                 break;
             case CATEGORY_ID:
                 queryBuilder.setTables(CategoriesTable.TABLE_NAME);
-                selection = selection + "_ID = " + uri.getLastPathSegment();
+                selection = CategoriesTable.ID + " AS _id, " + selection + " " + CategoriesTable.ID + " = " + uri.getLastPathSegment();
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);

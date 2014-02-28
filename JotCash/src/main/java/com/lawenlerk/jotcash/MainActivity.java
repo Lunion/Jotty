@@ -16,7 +16,6 @@ import com.lawenlerk.jotcash.provider.EntriesProvider;
 import java.util.Calendar;
 
 public class MainActivity extends ActionBarActivity implements
-        LoaderManager.LoaderCallbacks<Cursor>,
         RecordFragment.OnDatePickerButtonClickedListener,
         DatePickerFragment.OnDatePickerDoneListener {
     RecordFragment recordFragment;
@@ -29,7 +28,7 @@ public class MainActivity extends ActionBarActivity implements
         return super.onCreateOptionsMenu(menu);
     }
 
-   @Override
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add_transaction:
@@ -88,17 +87,4 @@ public class MainActivity extends ActionBarActivity implements
         recordFragment.setDate(year, month, day);
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        android.support.v4.content.CursorLoader cursorLoader = new android.support.v4.content.CursorLoader(this, EntriesProvider.TRANSACTIONS_URI, null, null, null, null);
-        return cursorLoader;
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> cursorLoader) {
-    }
 }

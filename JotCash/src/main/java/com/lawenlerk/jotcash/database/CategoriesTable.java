@@ -9,7 +9,7 @@ import android.util.Log;
 public class CategoriesTable {
     public static final String TABLE_NAME = "categories";
 
-    public static final String ID = "_ID";
+    public static final String ID = "CATEGORY_ID";
     public static final String CATEGORY = "category";
     public static final String LAST_USED = "last_used";
     public static final String COUNT = "count";
@@ -22,8 +22,8 @@ public class CategoriesTable {
             COUNT + " INTEGER NOT NULL" + ");";
 
     public static void onCreate(SQLiteDatabase database) {
-        Log.w(CategoriesTable.class.getName(), SQL_CREATE_TABLE);
         database.execSQL(SQL_CREATE_TABLE);
+        Log.w(CategoriesTable.class.getName(), SQL_CREATE_TABLE);
     }
 
     public static void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
