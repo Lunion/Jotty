@@ -93,7 +93,13 @@ public class RecordFragment extends Fragment {
 
 
             // Set up category adder
+            ibCategoryAdd = (ImageButton) view.findViewById(R.id.ibCategoryAdd);
+            ibCategoryAdd.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 
+                }
+            });
 
             // Set up category image button
             ibCategoryAdd = (ImageButton) view.findViewById(R.id.ibCategoryAdd);
