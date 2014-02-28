@@ -2,11 +2,17 @@ package com.lawenlerk.jotcash.provider;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.text.TextUtils;
+import android.util.Log;
 
+import com.lawenlerk.jotcash.database.CategoriesTable;
 import com.lawenlerk.jotcash.database.EntriesDatabaseHelper;
+import com.lawenlerk.jotcash.database.TransactionsTable;
 
 /**
  * Created by enlerklaw on 2/25/14.
@@ -16,7 +22,22 @@ public class EntriesProvider extends ContentProvider {
     private EntriesDatabaseHelper entriesDatabaseHelper;
 
     private static final String DBNAME = "entries";
-    private SQLiteDatabase database;
+
+    // Integer codes/constants for UriMatcher
+    private static final int TRANSACTIONS = 1;
+    private static final int TRANSACTION_ID = 2;
+    private static final int CATEGORIES = 3;
+    private static final int CATEGORY_ID = 4;
+
+    private static final String AUTHORITY = "com.lawenlerk.jotcash.provider";
+
+    private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+    static {
+        sUriMatcher.addURI(AUTHORITY, TransactionsTable.TABLE_NAME, TRANSACTIONS);
+        sUriMatcher.addURI(AUTHORITY, TransactionsTable.TABLE_NAME + "/#", TRANSACTION_ID);
+        sUriMatcher.addURI(AUTHORITY, CategoriesTable.TABLE_NAME, CATEGORIES);
+        sUriMatcher.addURI(AUTHORITY, CategoriesTable.TABLE_NAME + "/#", CATEGORY_ID);
+    }
 
 /*    // used for the UriMatcher
     private static final int TRANSACTIONS = 10;
@@ -48,7 +69,40 @@ public class EntriesProvider extends ContentProvider {
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        return null;
+        SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+
+        switch (sUriMatcher.match(uri)) {
+            case TRANSACTIONS:
+                queryBuilder.setTables(TransactionsTable.TABLE_NAME + " JOIN " +CategoriesTable.TABLE_NAME + " ON ("+TransactionsTable.TABLE_NAME +"." + TransactionsTable.CATEGORY_ID + " = "+CategoriesTable.TABLE_NAME +"." + CategoriesTable.CATEGORY_ID + ")");
+                if (TextUtils.isEmpty(sortOrder)) {
+                    sortOrder = "_ID ASC";
+                }
+                break;
+            case TRANSACTION_ID:
+                queryBuilder.setTables(TransactionsTable.TABLE_NAME + " JOIN " +CategoriesTable.TABLE_NAME + " ON ("+TransactionsTable.TABLE_NAME +"." + TransactionsTable.CATEGORY_ID + " = "+CategoriesTable.TABLE_NAME +"." + CategoriesTable.CATEGORY_ID + ")");
+                selection = selection + "_ID = " + uri.getLastPathSegment();
+                break;
+            case CATEGORIES:
+                queryBuilder.setTables(CategoriesTable.TABLE_NAME);
+                if (TextUtils.isEmpty(sortOrder)) {
+                    sortOrder = "_ID ASC";
+                }
+                break;
+            case CATEGORY_ID:
+                queryBuilder.setTables(CategoriesTable.TABLE_NAME);
+                selection = selection + "_ID = " + uri.getLastPathSegment();
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI: " + uri);
+        }
+        SQLiteDatabase database = entriesDatabaseHelper.getWritableDatabase();
+        if (database==null) {
+            throw new IllegalArgumentException("Database is null");
+        }
+        Cursor cursor = queryBuilder.query(database, projection, selection, selectionArgs, null, null, sortOrder);
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+
+        return cursor;
     }
 
     @Override
