@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.lawenlerk.jotcash.database.CategoriesTable;
 import com.lawenlerk.jotcash.database.EntriesDatabaseHelper;
@@ -32,12 +31,16 @@ public class EntriesProvider extends ContentProvider {
     private static final String AUTHORITY = "com.lawenlerk.jotcash.provider";
 
     private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+
     static {
         sUriMatcher.addURI(AUTHORITY, TransactionsTable.TABLE_NAME, TRANSACTIONS);
         sUriMatcher.addURI(AUTHORITY, TransactionsTable.TABLE_NAME + "/#", TRANSACTION_ID);
         sUriMatcher.addURI(AUTHORITY, CategoriesTable.TABLE_NAME, CATEGORIES);
         sUriMatcher.addURI(AUTHORITY, CategoriesTable.TABLE_NAME + "/#", CATEGORY_ID);
     }
+
+    public static final Uri TRANSACTIONS_URI = Uri.parse("content://" + AUTHORITY + "/" + TransactionsTable.TABLE_NAME);
+    public static final Uri CATEGORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + CategoriesTable.TABLE_NAME);
 
 /*    // used for the UriMatcher
     private static final int TRANSACTIONS = 10;
@@ -70,16 +73,17 @@ public class EntriesProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+        SQLiteDatabase database = entriesDatabaseHelper.getReadableDatabase();
 
         switch (sUriMatcher.match(uri)) {
             case TRANSACTIONS:
-                queryBuilder.setTables(TransactionsTable.TABLE_NAME + " JOIN " +CategoriesTable.TABLE_NAME + " ON ("+TransactionsTable.TABLE_NAME +"." + TransactionsTable.CATEGORY_ID + " = "+CategoriesTable.TABLE_NAME +"." + CategoriesTable.CATEGORY_ID + ")");
+                queryBuilder.setTables(TransactionsTable.TABLE_NAME + " JOIN " + CategoriesTable.TABLE_NAME + " ON (" + TransactionsTable.TABLE_NAME + "." + TransactionsTable.CATEGORY_ID + " = " + CategoriesTable.TABLE_NAME + "." + CategoriesTable.ID + ")");
                 if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = "_ID ASC";
                 }
                 break;
             case TRANSACTION_ID:
-                queryBuilder.setTables(TransactionsTable.TABLE_NAME + " JOIN " +CategoriesTable.TABLE_NAME + " ON ("+TransactionsTable.TABLE_NAME +"." + TransactionsTable.CATEGORY_ID + " = "+CategoriesTable.TABLE_NAME +"." + CategoriesTable.CATEGORY_ID + ")");
+                queryBuilder.setTables(TransactionsTable.TABLE_NAME + " JOIN " + CategoriesTable.TABLE_NAME + " ON (" + TransactionsTable.TABLE_NAME + "." + TransactionsTable.CATEGORY_ID + " = " + CategoriesTable.TABLE_NAME + "." + CategoriesTable.ID + ")");
                 selection = selection + "_ID = " + uri.getLastPathSegment();
                 break;
             case CATEGORIES:
@@ -95,10 +99,7 @@ public class EntriesProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
-        SQLiteDatabase database = entriesDatabaseHelper.getWritableDatabase();
-        if (database==null) {
-            throw new IllegalArgumentException("Database is null");
-        }
+
         Cursor cursor = queryBuilder.query(database, projection, selection, selectionArgs, null, null, sortOrder);
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
 
@@ -112,17 +113,160 @@ public class EntriesProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues contentValues) {
-        return null;
+        SQLiteDatabase database = entriesDatabaseHelper.getWritableDatabase();
+
+        switch (sUriMatcher.match(uri)) {
+            case TRANSACTIONS:
+                // Check if category already exists in categories table
+                String[] projection = {
+                        CategoriesTable.ID,
+                        CategoriesTable.CATEGORY
+                };
+                String selection = CategoriesTable.CATEGORY + " = ?";
+                String[] selectionArgs = {contentValues.getAsString(CategoriesTable.CATEGORY)};
+                Cursor cursor = query(CATEGORIES_URI, projection, selection, selectionArgs, null);
+
+                // Prepare ContentValues for insertion or update in categories table later
+                ContentValues categoryContentValues = new ContentValues();
+                categoryContentValues.put(CategoriesTable.CATEGORY, contentValues.getAsString(CategoriesTable.CATEGORY));
+                categoryContentValues.put(CategoriesTable.LAST_USED, contentValues.getAsString(TransactionsTable.TIME_CREATED));
+
+                String categoryId;
+
+                if (cursor.getCount() == 0) {
+                    // Category does not exist
+                    // Initialise count to 1
+                    categoryContentValues.put(CategoriesTable.COUNT, 1);
+
+                    // Actually do the insert
+                    Uri categoryUri = insert(CATEGORIES_URI, categoryContentValues);
+                    categoryId = categoryUri.getLastPathSegment();
+
+                } else {
+                    // Category already exists
+                    // Use existing cursor to update category frequency and last used time
+                    int categoryIdIndex = cursor.getColumnIndex(CategoriesTable.ID);
+                    int categoryCountIndex = cursor.getColumnIndex(CategoriesTable.COUNT);
+                    cursor.moveToNext();
+                    categoryId = cursor.getString(categoryIdIndex);
+                    int categoryCount = cursor.getInt(categoryCountIndex);
+
+                    // Increment count
+                    categoryContentValues.put(CategoriesTable.COUNT, categoryCount + 1);
+                    Uri categoryUri = Uri.parse(CATEGORIES_URI + "/" + categoryId);
+
+                    // Actually do the update
+                    update(categoryUri, categoryContentValues, null, null);
+
+                }
+
+                // Append into original set of contentValues with returned categoryID as well and insert into database
+                contentValues.put(TransactionsTable.CATEGORY_ID, categoryId);
+                long transactionId = database.insert(TransactionsTable.TABLE_NAME, null, contentValues);
+
+                getContext().getContentResolver().notifyChange(uri, null);
+                return Uri.parse(TRANSACTIONS_URI + "/" + transactionId);
+
+            case CATEGORIES:
+                // Check if ContentValues have right amount of values
+
+                // Insert into categories table
+                long categoryIdLong = database.insert(CategoriesTable.TABLE_NAME, null, contentValues);
+
+                getContext().getContentResolver().notifyChange(uri, null);
+                return Uri.parse(CATEGORIES_URI + "/" + categoryIdLong);
+            default:
+                throw new IllegalArgumentException("Unknown URI: " + uri);
+        }
     }
 
     @Override
-    public int delete(Uri uri, String s, String[] strings) {
-        return 0;
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+        int rowsDeleted = 0;
+
+        SQLiteDatabase database = entriesDatabaseHelper.getWritableDatabase();
+
+        String id;
+
+        switch (sUriMatcher.match(uri)) {
+            case TRANSACTIONS:
+                rowsDeleted = database.delete(TransactionsTable.TABLE_NAME, selection, selectionArgs);
+                deleteUnusedCategories();
+                break;
+            case TRANSACTION_ID:
+                id = uri.getLastPathSegment();
+                if (TextUtils.isEmpty(selection)) {
+                    rowsDeleted = database.delete(TransactionsTable.TABLE_NAME, TransactionsTable.ID + "=" + id, null);
+                } else {
+                    rowsDeleted = database.delete(TransactionsTable.TABLE_NAME, TransactionsTable.ID + "=" + id + " AND " + selection, selectionArgs);
+                }
+                deleteUnusedCategories();
+                break;
+            case CATEGORIES:
+                rowsDeleted = database.delete(CategoriesTable.TABLE_NAME, selection, selectionArgs);
+                break;
+            case CATEGORY_ID:
+                id = uri.getLastPathSegment();
+                if (TextUtils.isEmpty(selection)) {
+                    rowsDeleted = database.delete(CategoriesTable.TABLE_NAME, CategoriesTable.ID + "=" + id, null);
+                } else {
+                    rowsDeleted = database.delete(CategoriesTable.TABLE_NAME, CategoriesTable.ID + "=" + id + " AND " + selection, selectionArgs);
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI: " + uri);
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
+        return rowsDeleted;
+    }
+
+    private int deleteUnusedCategories() {
+        int rowsDeleted = 0;
+
+        rowsDeleted = delete(CATEGORIES_URI, CategoriesTable.COUNT + "=" + Integer.toString(0), null);
+        getContext().getContentResolver().notifyChange(CATEGORIES_URI, null);
+
+        return rowsDeleted;
+
     }
 
     @Override
-    public int update(Uri uri, ContentValues contentValues, String s, String[] strings) {
-        return 0;
+    public int update(Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
+        // Do not use this in the UI to update an existing transaction, create a new transaction and delete the old one instead.
+
+        int rowsUpdated = 0;
+        String id;
+
+        SQLiteDatabase database = entriesDatabaseHelper.getWritableDatabase();
+
+        switch (sUriMatcher.match(uri)) {
+            case TRANSACTIONS:
+                rowsUpdated = database.update(TransactionsTable.TABLE_NAME, contentValues, selection, selectionArgs);
+                break;
+            case TRANSACTION_ID:
+                id = uri.getLastPathSegment();
+                if (TextUtils.isEmpty(selection)) {
+                    rowsUpdated = database.update(TransactionsTable.TABLE_NAME, contentValues, TransactionsTable.CATEGORY_ID + "=" + id, null);
+                } else {
+                    rowsUpdated = database.update(TransactionsTable.TABLE_NAME, contentValues, TransactionsTable.CATEGORY_ID + "=" + id + " AND " + selection, selectionArgs);
+                }
+                break;
+            case CATEGORIES:
+                rowsUpdated = database.update(CategoriesTable.TABLE_NAME, contentValues, selection, selectionArgs);
+                break;
+            case CATEGORY_ID:
+                id = uri.getLastPathSegment();
+                if (TextUtils.isEmpty(selection)) {
+                    rowsUpdated = database.update(CategoriesTable.TABLE_NAME, contentValues, CategoriesTable.ID + "=" + id, null);
+                } else {
+                    rowsUpdated = database.update(CategoriesTable.TABLE_NAME, contentValues, CategoriesTable.ID + "=" + id + " AND " + selection, selectionArgs);
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI: " + uri);
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
+        return rowsUpdated;
     }
 
 

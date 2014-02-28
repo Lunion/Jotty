@@ -9,17 +9,20 @@ import android.util.Log;
 public class CategoriesTable {
     public static final String TABLE_NAME = "categories";
 
-    public static final String CATEGORY_ID = "_ID";
+    public static final String ID = "_ID";
     public static final String CATEGORY = "category";
     public static final String LAST_USED = "last_used";
+    public static final String COUNT = "count";
 
     private static final String SQL_CREATE_TABLE = "CREATE TABLE " +
             TABLE_NAME + " (" +
-            CATEGORY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             CATEGORY + " TEXT NOT NULL, " +
-            LAST_USED + " TEXT NOT NULL" + ");";
+            LAST_USED + " TEXT NOT NULL, " +
+            COUNT + " INTEGER NOT NULL" + ");";
 
     public static void onCreate(SQLiteDatabase database) {
+        Log.w(CategoriesTable.class.getName(), SQL_CREATE_TABLE);
         database.execSQL(SQL_CREATE_TABLE);
     }
 

@@ -31,14 +31,14 @@ public class OverviewFragment extends Fragment {
         lvTransactions = (ListView) view.findViewById(R.id.lvTransactions);
         lvTransactions.setEmptyView(progressBar);
 
-        ViewGroup root = (ViewGroup) view.findViewById(android.R.id.content);
-        root.addView(progressBar);
+/*        ViewGroup root = (ViewGroup) view.findViewById(android.R.id.content);
+        root.addView(progressBar);*/
 
         String[] fromColumns = {TransactionsTable.AMOUNT};
         int[] toViews = {android.R.id.text1};
 
-        SimpleCursorAdapter mAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, fromColumns, toViews, 0);
-
+        android.support.v4.widget.SimpleCursorAdapter mAdapter = new android.support.v4.widget.SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, fromColumns, toViews, 0);
+        lvTransactions.setAdapter(mAdapter);
 
 
         return view;

@@ -90,7 +90,7 @@ public class MainActivity extends ActionBarActivity implements
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        android.support.v4.content.CursorLoader cursorLoader = new android.support.v4.content.CursorLoader(this, EntriesProvider.CONTENT_URI, null, null, null, null);
+        android.support.v4.content.CursorLoader cursorLoader = new android.support.v4.content.CursorLoader(this, EntriesProvider.TRANSACTIONS_URI, null, null, null, null);
         return cursorLoader;
     }
 

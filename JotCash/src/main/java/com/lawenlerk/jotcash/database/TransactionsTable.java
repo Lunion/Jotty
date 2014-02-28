@@ -27,9 +27,10 @@ public class TransactionsTable {
             DATE + " TEXT NOT NULL, " +
             DESCRIPTION + " TEXT NOT NULL, " +
             CATEGORY_ID + " TEXT NOT NULL, " +
-            "FOREIGN KEY(" + CATEGORY_ID + ") REFERENCES " + CategoriesTable.TABLE_NAME + "(" + CategoriesTable.CATEGORY_ID + ") NOT NULL" + ");";
+            "FOREIGN KEY(" + CATEGORY_ID + ") REFERENCES " + CategoriesTable.TABLE_NAME + "(" + CategoriesTable.ID + ") NOT NULL" + ");";
 
     public static void onCreate(SQLiteDatabase database) {
+        Log.w(TransactionsTable.class.getName(), SQL_CREATE_TABLE);
         database.execSQL(SQL_CREATE_TABLE);
     }
 
