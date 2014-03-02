@@ -190,6 +190,26 @@ public class EntriesProvider extends ContentProvider {
                 break;
             case TRANSACTION_ID:
                 id = uri.getLastPathSegment();
+
+                // Take not of the category to decrement
+                String[] transactionProjection = {
+                        TransactionsTable.CATEGORY_ID,
+                        CategoriesTable.COUNT
+                };
+                Cursor transactionCursor = query(Uri.parse(TRANSACTIONS_URI + "/" + id), transactionProjection, null, null, null);
+                transactionCursor.moveToFirst();
+                int categoryIdIndex = transactionCursor.getColumnIndex(TransactionsTable.CATEGORY_ID);
+                String categoryId = transactionCursor.getString(categoryIdIndex);
+
+                // Take not of the current count for the category. This can be obtained here because of the joined query
+                int countIndex = transactionCursor.getColumnIndex(CategoriesTable.COUNT);
+                int count = transactionCursor.getInt(countIndex);
+
+                // Update category by id
+                ContentValues categoryCV = new ContentValues();
+                categoryCV.put(CategoriesTable.COUNT, count-1);
+                update(Uri.parse(CATEGORIES_URI + "/" + categoryId), categoryCV, null, null);
+
                 if (TextUtils.isEmpty(selection)) {
                     rowsDeleted = database.delete(TransactionsTable.TABLE_NAME, TransactionsTable.ID + "=" + id, null);
                 } else {
@@ -228,6 +248,7 @@ public class EntriesProvider extends ContentProvider {
     @Override
     public int update(Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
         // Do not use this in the UI to update an existing transaction, create a new transaction and delete the old one instead.
+        // This is only for internal use
 
         int rowsUpdated = 0;
         String id;
@@ -240,6 +261,7 @@ public class EntriesProvider extends ContentProvider {
                 break;
             case TRANSACTION_ID:
                 id = uri.getLastPathSegment();
+
                 if (TextUtils.isEmpty(selection)) {
                     rowsUpdated = database.update(TransactionsTable.TABLE_NAME, contentValues, TransactionsTable.CATEGORY_ID + "=" + id, null);
                 } else {

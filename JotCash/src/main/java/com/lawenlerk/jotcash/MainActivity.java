@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,6 +34,8 @@ public class MainActivity extends ActionBarActivity implements
         switch (item.getItemId()) {
             case R.id.action_add_transaction:
                 launchRecordFragment();
+                ActionBar actionBar = getSupportActionBar();
+                actionBar.setDisplayHomeAsUpEnabled(true);
                 return true;
             case R.id.action_settings:
                 return true;
