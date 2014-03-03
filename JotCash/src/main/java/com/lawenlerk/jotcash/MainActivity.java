@@ -45,12 +45,12 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     private void launchRecordFragment() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
+/*        FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         recordFragment = new RecordFragment();
         fragmentTransaction.add(R.id.fragment_container, recordFragment);
         fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
+        fragmentTransaction.commit();*/
     }
 
     @Override
