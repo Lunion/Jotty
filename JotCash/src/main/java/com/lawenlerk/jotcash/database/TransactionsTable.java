@@ -15,7 +15,7 @@ public class TransactionsTable {
     public static final String TYPE = "type";
     public static final String DATE = "date";
     public static final String DESCRIPTION = "description";
-    public static final String CATEGORY_ID = "CATEGORY_ID";
+    public static final String CATEGORY = "category";
 
     // SQL statement to create transactions table
     private static final String SQL_CREATE_TABLE = "CREATE TABLE " +
@@ -26,8 +26,7 @@ public class TransactionsTable {
             TYPE + " TEXT NOT NULL, " +
             DATE + " TEXT NOT NULL, " +
             DESCRIPTION + " TEXT NOT NULL, " +
-            CATEGORY_ID + " TEXT NOT NULL, " +
-            "FOREIGN KEY(" + CATEGORY_ID + ") REFERENCES " + CategoriesTable.TABLE_NAME + "(" + CategoriesTable.ID + ")" + ");";
+            CATEGORY + " TEXT NOT NULL);";
 
     public static void onCreate(SQLiteDatabase database) {
         database.execSQL(SQL_CREATE_TABLE);

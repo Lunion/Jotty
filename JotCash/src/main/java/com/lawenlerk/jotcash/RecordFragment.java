@@ -1,7 +1,6 @@
 package com.lawenlerk.jotcash;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -11,6 +10,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,14 +25,12 @@ import android.widget.Toast;
 import com.doomonafireball.betterpickers.calendardatepicker.CalendarDatePickerDialog;
 import com.doomonafireball.betterpickers.numberpicker.NumberPickerBuilder;
 import com.doomonafireball.betterpickers.numberpicker.NumberPickerDialogFragment;
-import com.lawenlerk.jotcash.database.CategoriesTable;
 import com.lawenlerk.jotcash.database.TransactionsTable;
 import com.lawenlerk.jotcash.provider.EntriesProvider;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.List;
 
 /**
  * Created by En Lerk on 2/6/14.
@@ -52,12 +50,13 @@ public class RecordFragment extends Fragment
 
     SimpleCursorAdapter mAdapter;
     private static final String[] PROJECTION = {
-            CategoriesTable.ID + " AS _id",
-            CategoriesTable.CATEGORY
+            "DISTINCT " + TransactionsTable.CATEGORY + " AS _id",
+            TransactionsTable.CATEGORY, // for convenience
     };
+    private static final String SELECTION = null;
+    private static final String[] SELECTIONARGS = null;
+    private static final String SORTORDER = "date(" + TransactionsTable.TIME_CREATED + ") DESC";
 
-    private List<CategoryItem> data;
-    private ProgressDialog progressDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -126,7 +125,7 @@ public class RecordFragment extends Fragment
 
             // Set up category list
             lvCategoryPicker = (ListView) view.findViewById(R.id.lvCategoryPicker);
-            String[] fromColumns = {CategoriesTable.CATEGORY};
+            String[] fromColumns = {TransactionsTable.CATEGORY};
             int[] toViews = {android.R.id.text1};
             mAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, fromColumns, toViews, 0);
             lvCategoryPicker.setAdapter(mAdapter);
@@ -145,6 +144,7 @@ public class RecordFragment extends Fragment
                     if (etCategorySearch.getText().toString().isEmpty()) {
                         Toast.makeText(getActivity(), "Please enter a category", Toast.LENGTH_SHORT).show();
                     } else {
+                        transaction.category = etCategorySearch.getText().toString();
                         saveTransaction(transaction);
                         getActivity().finish();
                     }
@@ -241,21 +241,28 @@ public class RecordFragment extends Fragment
         transaction.timeCreated = Calendar.getInstance();
         DateFormat dateFormat = new SimpleDateFormat(getString(R.string.database_date_time_format));
         contentValues.put(TransactionsTable.TIME_CREATED, dateFormat.format(transaction.timeCreated.getTime()));
+        Log.i("RecordFragment", "Put " + dateFormat.format(transaction.timeCreated.getTime()));
 
         contentValues.put(TransactionsTable.AMOUNT, transaction.amount);
+        Log.i("RecordFragment", "Put " + transaction.amount);
 
         if (transaction.transactionType == Transaction.EXPENSE) {
             contentValues.put(TransactionsTable.TYPE, "EXPENSE");
+            Log.i("RecordFragment", "Put " + "EXPENSE");
         } else {
             contentValues.put(TransactionsTable.TYPE, "INCOME");
+            Log.i("RecordFragment", "Put " + "INCOME");
         }
 
         dateFormat = new SimpleDateFormat(getString(R.string.database_date_format));
         contentValues.put(TransactionsTable.DATE, dateFormat.format(transaction.date.getTime()));
+        Log.i("RecordFragment", "Put " + dateFormat.format(transaction.date.getTime()));
 
         contentValues.put(TransactionsTable.DESCRIPTION, transaction.description);
+        Log.i("RecordFragment", "Put " + transaction.description);
 
-        contentValues.put(CategoriesTable.CATEGORY, transaction.category);
+        contentValues.put(TransactionsTable.CATEGORY, transaction.category);
+        Log.i("RecordFragment", "Put " + transaction.category);
 
         getActivity().getContentResolver().insert(EntriesProvider.TRANSACTIONS_URI, contentValues);
 
@@ -264,7 +271,7 @@ public class RecordFragment extends Fragment
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getActivity(), EntriesProvider.CATEGORIES_URI, PROJECTION, null, null, null);
+        return new CursorLoader(getActivity(), EntriesProvider.TRANSACTIONS_URI, PROJECTION, SELECTION, SELECTIONARGS, SORTORDER);
     }
 
     @Override
