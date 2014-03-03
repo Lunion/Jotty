@@ -1,5 +1,6 @@
 package com.lawenlerk.jotcash;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -16,9 +17,7 @@ import com.lawenlerk.jotcash.provider.EntriesProvider;
 
 import java.util.Calendar;
 
-public class MainActivity extends ActionBarActivity implements
-        RecordFragment.OnDatePickerButtonClickedListener,
-        DatePickerFragment.OnDatePickerDoneListener {
+public class MainActivity extends ActionBarActivity {
     RecordFragment recordFragment;
     OverviewFragment overviewFragment;
 
@@ -34,8 +33,6 @@ public class MainActivity extends ActionBarActivity implements
         switch (item.getItemId()) {
             case R.id.action_add_transaction:
                 launchRecordFragment();
-                ActionBar actionBar = getSupportActionBar();
-                actionBar.setDisplayHomeAsUpEnabled(true);
                 return true;
             case R.id.action_settings:
                 return true;
@@ -45,12 +42,9 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     private void launchRecordFragment() {
-/*        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        recordFragment = new RecordFragment();
-        fragmentTransaction.add(R.id.fragment_container, recordFragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();*/
+        Intent intent = new Intent(this, RecordActivity.class);
+        startActivity(intent);
+
     }
 
     @Override
@@ -64,30 +58,6 @@ public class MainActivity extends ActionBarActivity implements
         fragmentTransaction.add(R.id.fragment_container, overviewFragment);
         fragmentTransaction.commit();
 
-        /*
-        recordFragment = new RecordFragment();
-        fragmentTransaction.add(R.id.fragment_container, recordFragment);
-        fragmentTransaction.commit();
-        */
-    }
-
-    @Override
-    public void onDatePickerClicked() {
-        android.support.v4.app.DialogFragment datePickerFragment = new DatePickerFragment();
-
-        // Put date date into argument to pass to datePickerFragment
-        Bundle args = new Bundle();
-        args.putInt("year", recordFragment.date.get(Calendar.YEAR));
-        args.putInt("month", recordFragment.date.get(Calendar.MONTH));
-        args.putInt("dayOfMonth", recordFragment.date.get(Calendar.DAY_OF_MONTH));
-        datePickerFragment.setArguments(args);
-
-        datePickerFragment.show(getSupportFragmentManager(), "datePicker");
-    }
-
-    @Override
-    public void onDatePickerDone(int year, int month, int day) {
-        recordFragment.setDate(year, month, day);
     }
 
 }
