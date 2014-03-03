@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.lawenlerk.jotcash.database.CategoriesTable;
 import com.lawenlerk.jotcash.database.EntriesDatabaseHelper;
@@ -85,17 +86,18 @@ public class EntriesProvider extends ContentProvider {
                 break;
             case CATEGORIES:
                 queryBuilder.setTables(CategoriesTable.TABLE_NAME);
-                selection = CategoriesTable.ID + " AS _id";
                 break;
             case CATEGORY_ID:
                 queryBuilder.setTables(CategoriesTable.TABLE_NAME);
-                selection = CategoriesTable.ID + " AS _id, " + selection + " " + CategoriesTable.ID + " = " + uri.getLastPathSegment();
+                selection = selection + " " + CategoriesTable.ID + " = " + uri.getLastPathSegment();
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
 
         Cursor cursor = queryBuilder.query(database, projection, selection, selectionArgs, null, null, sortOrder);
+        Log.d("EntriesProvider", Integer.toString(cursor.getCount()));
+        Log.v("EntriesProvider", "Queried from the database");
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
 
         return cursor;
@@ -115,7 +117,8 @@ public class EntriesProvider extends ContentProvider {
                 // Check if category already exists in categories table
                 String[] projection = {
                         CategoriesTable.ID,
-                        CategoriesTable.CATEGORY
+                        CategoriesTable.CATEGORY,
+                        CategoriesTable.COUNT
                 };
                 String selection = CategoriesTable.CATEGORY + " = ?";
                 String[] selectionArgs = {contentValues.getAsString(CategoriesTable.CATEGORY)};
@@ -128,9 +131,10 @@ public class EntriesProvider extends ContentProvider {
 
                 String categoryId;
 
-                if (cursor.getCount() == 0) {
+                if (cursor.getCount() < 1) {
                     // Category does not exist
                     // Initialise count to 1
+                    Log.d("EntriesProvider", "category does not exist");
                     categoryContentValues.put(CategoriesTable.COUNT, 1);
 
                     // Actually do the insert
@@ -140,9 +144,10 @@ public class EntriesProvider extends ContentProvider {
                 } else {
                     // Category already exists
                     // Use existing cursor to update category frequency and last used time
+                    Log.d("EntriesProvider", "category already exists");
+                    cursor.moveToFirst();
                     int categoryIdIndex = cursor.getColumnIndex(CategoriesTable.ID);
                     int categoryCountIndex = cursor.getColumnIndex(CategoriesTable.COUNT);
-                    cursor.moveToNext();
                     categoryId = cursor.getString(categoryIdIndex);
                     int categoryCount = cursor.getInt(categoryCountIndex);
 
@@ -156,8 +161,11 @@ public class EntriesProvider extends ContentProvider {
                 }
 
                 // Append into original set of contentValues with returned categoryID as well and insert into database
+                // Also, remove the category field in contentValues as this exists in categories table
+                contentValues.remove(CategoriesTable.CATEGORY);
                 contentValues.put(TransactionsTable.CATEGORY_ID, categoryId);
                 long transactionId = database.insert(TransactionsTable.TABLE_NAME, null, contentValues);
+                Log.v("EntriesProvider", "Inserted transaction into database");
 
                 getContext().getContentResolver().notifyChange(uri, null);
                 return Uri.parse(TRANSACTIONS_URI + "/" + transactionId);
@@ -168,6 +176,7 @@ public class EntriesProvider extends ContentProvider {
                 // Insert into categories table
                 long categoryIdLong = database.insert(CategoriesTable.TABLE_NAME, null, contentValues);
 
+                Log.v("EntriesProvider", "Inserted category into database");
                 getContext().getContentResolver().notifyChange(uri, null);
                 return Uri.parse(CATEGORIES_URI + "/" + categoryIdLong);
             default:
@@ -231,6 +240,7 @@ public class EntriesProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
+        Log.v("EntriesProvider", "Deleted transaction/category from database");
         getContext().getContentResolver().notifyChange(uri, null);
         return rowsDeleted;
     }
@@ -239,6 +249,7 @@ public class EntriesProvider extends ContentProvider {
         int rowsDeleted = 0;
 
         rowsDeleted = delete(CATEGORIES_URI, CategoriesTable.COUNT + "=" + Integer.toString(0), null);
+        Log.v("EntriesProvider", "Deleted unused categories from database");
         getContext().getContentResolver().notifyChange(CATEGORIES_URI, null);
 
         return rowsDeleted;
@@ -282,6 +293,7 @@ public class EntriesProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
+        Log.v("EntriesProvider", "Updated database");
         getContext().getContentResolver().notifyChange(uri, null);
         return rowsUpdated;
     }
@@ -312,7 +324,7 @@ public class EntriesProvider extends ContentProvider {
     }
 
     @Override
-    public String getType(Uri uri) {
+    public String getTransactionType(Uri uri) {
         return null;
     }
 

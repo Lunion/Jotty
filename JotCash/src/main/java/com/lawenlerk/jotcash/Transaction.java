@@ -7,61 +7,42 @@ import java.util.Calendar;
  */
 public class Transaction {
     // Private variables
-    int id;
-    float amount;
-    String type;
-    Calendar date;
-    String category;
+    public int id;
+    public Calendar timeCreated;
+    public double amount;
+    int transactionType;
+    public Calendar date;
+    public String category;
+    public String description;
+
+    public static int EXPENSE = 1;
+    public static int INCOME = 2;
 
     public Transaction() {
-
+        timeCreated = Calendar.getInstance();
+        amount = 0;
+        transactionType = Transaction.EXPENSE;
+        date = Calendar.getInstance();
+        category = "";
+        description = "";
     }
 
-    public Transaction(int id, float amount, String type, Calendar date, String category) {
-        this.id = id;
+    public Transaction(double amount, int transactionType, Calendar date, String category, String description) {
+        this.timeCreated = Calendar.getInstance();
+
         this.amount = amount;
-        this.type = type;
+        this.transactionType = transactionType;
         this.date = date;
         this.category = category;
+        this.description = description;
     }
 
-    public Calendar getDate() {
-        return date;
+    public boolean isComplete() {
+        if (timeCreated == null || amount < 0 || transactionType == -1 || date == null || category == null) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
-    public void setDate(Calendar date) {
-        this.date = date;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public float getAmount() {
-        return amount;
-    }
-
-    public void setAmount(float amount) {
-        this.amount = amount;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
 }

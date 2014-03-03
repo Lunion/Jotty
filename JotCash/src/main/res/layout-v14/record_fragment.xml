@@ -12,7 +12,7 @@
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin">
 
-        <EditText
+        <Button
             android:id="@+id/etAmount"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/touchables_min_length"
@@ -24,7 +24,7 @@
             android:layout_toLeftOf="@+id/swExpenseIncome"
             android:ems="10"
             android:hint="@string/amount"
-            android:inputType="numberDecimal"
+            style="@android:style/Widget.Holo.Light.EditText"
             android:singleLine="true" />
 
         <Switch
@@ -76,7 +76,6 @@
             android:id="@+id/lvCategoryPicker"
             android:layout_width="fill_parent"
             android:layout_height="0dp"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
             android:layout_above="@+id/rlCategorySearch"
             android:layout_alignParentTop="true">
 
