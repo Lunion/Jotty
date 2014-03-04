@@ -42,24 +42,22 @@ public class RecordFragment extends Fragment
         implements CalendarDatePickerDialog.OnDateSetListener,
         NumberPickerDialogFragment.NumberPickerDialogHandler,
         LoaderManager.LoaderCallbacks<Cursor> {
+    // Constants for loader use
+    private static final int EXPENSE = 1;
+    private static final int INCOME = 2;
     Transaction transaction = new Transaction();
-
+    NumberPickerBuilder numberPickerBuilder;
     View view;
     Button btAmount;
     RadioButton rbExpense;
     RadioButton rbIncome;
     Button btDatePicker;
+    EditText etDescription;
     ListView lvCategoryPicker;
     EditText etCategorySearch;
     ImageButton ibCategoryAdd;
-
     SimpleCursorAdapter expenseAdapter;
     SimpleCursorAdapter incomeAdapter;
-
-    // Constants for loader use
-    private static final int EXPENSE = 1;
-    private static final int INCOME = 2;
-
     private Uri transactionUri = null;
 
 
@@ -135,6 +133,9 @@ public class RecordFragment extends Fragment
                 }
             });
 
+            // Set up description
+            etDescription = (EditText) view.findViewById(R.id.etDescription);
+
 
             // Set up category list
             lvCategoryPicker = (ListView) view.findViewById(R.id.lvCategoryPicker);
@@ -145,18 +146,20 @@ public class RecordFragment extends Fragment
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                     Log.d("RecordFragment", Long.toString(id));
                     Cursor cursor;
-                    if (transaction.category.equals(Transaction.EXPENSE)) {
+                    if (transaction.type.equals(Transaction.EXPENSE)) {
                         cursor = expenseAdapter.getCursor();
                     } else {
                         cursor = incomeAdapter.getCursor();
                     }
+                    Log.d("RecordFragment", "cursor.getCount()=" + cursor.getCount());
                     cursor.moveToPosition(position);
                     transaction.category = cursor.getString(cursor.getColumnIndex(TransactionsTable.CATEGORY));
+                    cursor.close();
                     saveTransaction(transaction);
                 }
             });
 
-            // Set up category editText
+            // Set up category etCategorySearch
             etCategorySearch = (EditText) view.findViewById(R.id.etCategorySearch);
 
             // Set up category image button
@@ -176,8 +179,8 @@ public class RecordFragment extends Fragment
             Bundle extras = getActivity().getIntent().getExtras();
             // Check from savedInstanceState
             if (savedInstanceState != null) {
-                transactionUri = (Uri) savedInstanceState.getParcelable(EntriesProvider.CONTENT_ITEM_TYPE);
-/*                loadTransaction(transactionUri);*/
+                transactionUri = savedInstanceState.getParcelable(EntriesProvider.CONTENT_ITEM_TYPE);
+                loadTransaction(transactionUri);
             } else if (extras != null) {
                 transactionUri = extras.getParcelable(EntriesProvider.CONTENT_ITEM_TYPE);
                 loadTransaction(transactionUri);
@@ -188,6 +191,7 @@ public class RecordFragment extends Fragment
                 setDate(Calendar.getInstance());
             }
         }
+
 
         return view;
     }
@@ -238,8 +242,10 @@ public class RecordFragment extends Fragment
         cursor.moveToFirst();
         setAmount(cursor.getDouble(cursor.getColumnIndex(TransactionsTable.AMOUNT)));
         setType(cursor.getString(cursor.getColumnIndex(TransactionsTable.TYPE)));
-
+        setDescription(cursor.getString(cursor.getColumnIndex(TransactionsTable.DESCRIPTION)));
         String dateString = cursor.getString(cursor.getColumnIndex(TransactionsTable.DATE));
+        setCategory(cursor.getString(cursor.getColumnIndex(TransactionsTable.CATEGORY)));
+
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.database_date_format));
         try {
             setDate(simpleDateFormat.parse(dateString));
@@ -247,6 +253,17 @@ public class RecordFragment extends Fragment
             e.printStackTrace();
         }
 
+        cursor.close();
+    }
+
+    private void setDescription(String description) {
+        transaction.description = description;
+        etDescription.setText(transaction.description);
+
+    }
+
+    private void setCategory(String category) {
+        transaction.category = category;
     }
 
     private void loadCategories() {
@@ -259,13 +276,15 @@ public class RecordFragment extends Fragment
     }
 
     private void launchNumberPicker() {
-        NumberPickerBuilder numberPickerBuilder = new NumberPickerBuilder();
-        numberPickerBuilder.setFragmentManager(getChildFragmentManager());
-        numberPickerBuilder.setStyleResId(R.style.BetterPickersDialogFragment_Light);
-        numberPickerBuilder.setTargetFragment(this);
-        numberPickerBuilder.setPlusMinusVisibility(View.INVISIBLE);
-        numberPickerBuilder.setLabelText("SGD");    // TODO let user select currency string from settings
-        numberPickerBuilder.show();
+        if (numberPickerBuilder == null) {
+            numberPickerBuilder = new NumberPickerBuilder();
+            numberPickerBuilder.setFragmentManager(getChildFragmentManager());
+            numberPickerBuilder.setStyleResId(R.style.BetterPickersDialogFragment_Light);
+            numberPickerBuilder.setTargetFragment(this);
+            numberPickerBuilder.setPlusMinusVisibility(View.INVISIBLE);
+            numberPickerBuilder.setLabelText("SGD");    // TODO let user select currency string from settings
+            numberPickerBuilder.show();
+        }
     }
 
     public void setDate(Date date) {
@@ -323,6 +342,12 @@ public class RecordFragment extends Fragment
     @Override
     public void onDateSet(CalendarDatePickerDialog calendarDatePickerDialog, int year, int month, int dayOfMonth) {
         setDate(year, month, dayOfMonth);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable();
     }
 
     @Override

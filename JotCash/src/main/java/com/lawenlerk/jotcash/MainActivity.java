@@ -1,21 +1,13 @@
 package com.lawenlerk.jotcash;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-
-import com.lawenlerk.jotcash.provider.EntriesProvider;
-
-import java.util.Calendar;
 
 public class MainActivity extends ActionBarActivity {
     RecordFragment recordFragment;
@@ -51,12 +43,14 @@ public class MainActivity extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        if (savedInstanceState == null) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        overviewFragment = new OverviewFragment();
-        fragmentTransaction.add(R.id.fragment_container, overviewFragment);
-        fragmentTransaction.commit();
+            overviewFragment = new OverviewFragment();
+            fragmentTransaction.add(R.id.fragment_container, overviewFragment);
+            fragmentTransaction.commit();
+        }
 
     }
 
