@@ -62,13 +62,13 @@
                         <configuration>
                             <artifacts>
                                 <artifact>
-                                    <transactionType>jar</transactionType>
+                                    <type>jar</type>
                                     <file>
                                         ${project.build.directory}/${project.build.finalName}.jar
                                     </file>
                                 </artifact>
                                 <artifact>
-                                    <transactionType>aar</transactionType>
+                                    <type>aar</type>
                                     <file>
                                         ${project.basedir}/build/libs/${project.artifactId}-${gradle.version}.aar
                                     </file>

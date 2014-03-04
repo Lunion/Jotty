@@ -3,6 +3,7 @@ package com.lawenlerk.jotcash;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -16,11 +17,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.Switch;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.doomonafireball.betterpickers.calendardatepicker.CalendarDatePickerDialog;
@@ -30,8 +30,10 @@ import com.lawenlerk.jotcash.database.TransactionsTable;
 import com.lawenlerk.jotcash.provider.EntriesProvider;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by En Lerk on 2/6/14.
@@ -44,20 +46,21 @@ public class RecordFragment extends Fragment
 
     View view;
     Button btAmount;
-    Switch swExpenseIncome;
+    RadioButton rbExpense;
+    RadioButton rbIncome;
     Button btDatePicker;
     ListView lvCategoryPicker;
     EditText etCategorySearch;
     ImageButton ibCategoryAdd;
 
-    SimpleCursorAdapter mAdapter;
-    private static final String[] PROJECTION = {
-            TransactionsTable.ID + " AS _id",
-            TransactionsTable.CATEGORY, // for convenience
-    };
-    private static final String SELECTION = null;
-    private static final String[] SELECTIONARGS = null;
-    private static final String SORTORDER = "MAX(" + TransactionsTable.TIME_CREATED + ") DESC";
+    SimpleCursorAdapter expenseAdapter;
+    SimpleCursorAdapter incomeAdapter;
+
+    // Constants for loader use
+    private static final int EXPENSE = 1;
+    private static final int INCOME = 2;
+
+    private Uri transactionUri = null;
 
 
     @Override
@@ -74,7 +77,10 @@ public class RecordFragment extends Fragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        launchNumberPicker();
+        if (transactionUri == null) {
+            // This is not an existing transaction
+            launchNumberPicker();
+        }
     }
 
     @Override
@@ -92,16 +98,22 @@ public class RecordFragment extends Fragment
             });
 
             // Set up swExpenseIncome
-            swExpenseIncome = (Switch) view.findViewById(R.id.swExpenseIncome);
-            swExpenseIncome.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            rbExpense = (RadioButton) view.findViewById(R.id.rbExpense);
+            rbExpense.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean isIncome) {
-                    if (isIncome) {
-                        transaction.transactionType = Transaction.INCOME;
+                public void onClick(View view) {
+                    if (((RadioButton) view).isChecked()) {
+                        setType(Transaction.EXPENSE);
+                    }
+                }
+            });
 
-                    } else {
-                        transaction.transactionType = Transaction.EXPENSE;
-
+            rbIncome = (RadioButton) view.findViewById(R.id.rbIncome);
+            rbIncome.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (((RadioButton) view).isChecked()) {
+                        setType(Transaction.INCOME);
                     }
                 }
             });
@@ -122,32 +134,30 @@ public class RecordFragment extends Fragment
 
                 }
             });
-            // Initialise date value to today
 
 
             // Set up category list
             lvCategoryPicker = (ListView) view.findViewById(R.id.lvCategoryPicker);
-            String[] fromColumns = {TransactionsTable.CATEGORY};
-            int[] toViews = {android.R.id.text1};
-            mAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, fromColumns, toViews, 0);
-            lvCategoryPicker.setAdapter(mAdapter);
-            getLoaderManager().initLoader(0, null, this);
+            loadCategories();
+
             lvCategoryPicker.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                     Log.d("RecordFragment", Long.toString(id));
-                    Cursor cursor = mAdapter.getCursor();
+                    Cursor cursor;
+                    if (transaction.category.equals(Transaction.EXPENSE)) {
+                        cursor = expenseAdapter.getCursor();
+                    } else {
+                        cursor = incomeAdapter.getCursor();
+                    }
                     cursor.moveToPosition(position);
                     transaction.category = cursor.getString(cursor.getColumnIndex(TransactionsTable.CATEGORY));
                     saveTransaction(transaction);
-                    getActivity().finish();
                 }
             });
 
-
             // Set up category editText
             etCategorySearch = (EditText) view.findViewById(R.id.etCategorySearch);
-
 
             // Set up category image button
             ibCategoryAdd = (ImageButton) view.findViewById(R.id.ibCategoryAdd);
@@ -155,23 +165,97 @@ public class RecordFragment extends Fragment
                 @Override
                 public void onClick(View view) {
                     if (etCategorySearch.getText().toString().isEmpty()) {
-                        Toast.makeText(getActivity(), "Please enter a category", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), getString(R.string.category_prompt), Toast.LENGTH_SHORT).show();
                     } else {
                         transaction.category = etCategorySearch.getText().toString();
                         saveTransaction(transaction);
-                        getActivity().finish();
                     }
                 }
             });
 
-
-            // Initialise values
-            setAmount(0.0);
-            transaction.transactionType = Transaction.EXPENSE;  // default value is expense
-            setDate(Calendar.getInstance());
+            Bundle extras = getActivity().getIntent().getExtras();
+            // Check from savedInstanceState
+            if (savedInstanceState != null) {
+                transactionUri = (Uri) savedInstanceState.getParcelable(EntriesProvider.CONTENT_ITEM_TYPE);
+/*                loadTransaction(transactionUri);*/
+            } else if (extras != null) {
+                transactionUri = extras.getParcelable(EntriesProvider.CONTENT_ITEM_TYPE);
+                loadTransaction(transactionUri);
+            } else {
+                // Initialise values
+                setAmount(0.0);
+                setType(Transaction.EXPENSE);
+                setDate(Calendar.getInstance());
+            }
         }
 
         return view;
+    }
+
+    private void saveTransaction(Transaction transaction) {
+        if (transactionUri == null) {
+            insertTransaction(transaction);
+        } else {
+            updateTransaction(transaction);
+        }
+        getActivity().finish();
+    }
+
+    private void updateTransaction(Transaction transaction) {
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(TransactionsTable.AMOUNT, transaction.amount);
+        Log.i("RecordFragment", "Put " + transaction.amount);
+
+        contentValues.put(TransactionsTable.TYPE, transaction.type);
+        Log.i("RecordFragment", "Put " + transaction.type);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat(getString(R.string.database_date_format));
+        contentValues.put(TransactionsTable.DATE, dateFormat.format(transaction.date.getTime()));
+        Log.i("RecordFragment", "Put " + dateFormat.format(transaction.date.getTime()));
+
+        contentValues.put(TransactionsTable.DESCRIPTION, transaction.description);
+        Log.i("RecordFragment", "Put " + transaction.description);
+
+        contentValues.put(TransactionsTable.CATEGORY, transaction.category);
+        Log.i("RecordFragment", "Put " + transaction.category);
+
+        getActivity().getContentResolver().update(transactionUri, contentValues, null, null);
+
+    }
+
+    private void loadTransaction(Uri transactionUri) {
+        String[] projection = {
+                TransactionsTable.AMOUNT,
+                TransactionsTable.TYPE,
+                TransactionsTable.DATE,
+                TransactionsTable.DESCRIPTION,
+                TransactionsTable.CATEGORY
+        };
+        Log.d("RecordFragment", "Loading: " + transactionUri.toString());
+        Cursor cursor = getActivity().getContentResolver().query(transactionUri, projection, null, null, null);
+        Log.d("RecordFragment", Integer.toString(cursor.getCount()));
+        cursor.moveToFirst();
+        setAmount(cursor.getDouble(cursor.getColumnIndex(TransactionsTable.AMOUNT)));
+        setType(cursor.getString(cursor.getColumnIndex(TransactionsTable.TYPE)));
+
+        String dateString = cursor.getString(cursor.getColumnIndex(TransactionsTable.DATE));
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.database_date_format));
+        try {
+            setDate(simpleDateFormat.parse(dateString));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void loadCategories() {
+        String[] fromColumns = {TransactionsTable.CATEGORY};
+        int[] toViews = {android.R.id.text1};
+        expenseAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, fromColumns, toViews, 0);
+        incomeAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, fromColumns, toViews, 0);
+        getLoaderManager().initLoader(EXPENSE, null, this);
+        getLoaderManager().initLoader(INCOME, null, this);
     }
 
     private void launchNumberPicker() {
@@ -182,6 +266,11 @@ public class RecordFragment extends Fragment
         numberPickerBuilder.setPlusMinusVisibility(View.INVISIBLE);
         numberPickerBuilder.setLabelText("SGD");    // TODO let user select currency string from settings
         numberPickerBuilder.show();
+    }
+
+    public void setDate(Date date) {
+        transaction.date.setTime(date);
+        updateDate();
     }
 
     public void setDate(Calendar date) {
@@ -203,10 +292,25 @@ public class RecordFragment extends Fragment
         btAmount.setText(toCurrency(amount, 2));
     }
 
+    public void setType(String type) {
+        transaction.type = type;
+        if (type.equals(Transaction.EXPENSE)) {
+            lvCategoryPicker.setAdapter(expenseAdapter);
+            if (!rbExpense.isChecked()) {
+                rbExpense.setChecked(true);
+            }
+        } else {
+            lvCategoryPicker.setAdapter(incomeAdapter);
+            if (!rbIncome.isChecked()) {
+                rbIncome.setChecked(true);
+            }
+        }
+    }
+
     private void updateDatePicker() {
         // Format date into string
-        SimpleDateFormat dateFormatter = new SimpleDateFormat(getString(R.string.date_format));
-        String dateString = dateFormatter.format(transaction.date.getTime());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.date_format));
+        String dateString = simpleDateFormat.format(transaction.date.getTime());
         btDatePicker.setText(dateString);
 
     }
@@ -245,7 +349,7 @@ public class RecordFragment extends Fragment
         return amountString + " " + currencyString;
     }
 
-    private void saveTransaction(Transaction transaction) {
+    private void insertTransaction(Transaction transaction) {
         // Things to generate: timeCreated
         // Things to save: Amount, TransactionType, Date, Description, Category
 
@@ -259,13 +363,8 @@ public class RecordFragment extends Fragment
         contentValues.put(TransactionsTable.AMOUNT, transaction.amount);
         Log.i("RecordFragment", "Put " + transaction.amount);
 
-        if (transaction.transactionType == Transaction.EXPENSE) {
-            contentValues.put(TransactionsTable.TYPE, "EXPENSE");
-            Log.i("RecordFragment", "Put " + "EXPENSE");
-        } else {
-            contentValues.put(TransactionsTable.TYPE, "INCOME");
-            Log.i("RecordFragment", "Put " + "INCOME");
-        }
+        contentValues.put(TransactionsTable.TYPE, transaction.type);
+        Log.i("RecordFragment", "Put " + transaction.type);
 
         dateFormat = new SimpleDateFormat(getString(R.string.database_date_format));
         contentValues.put(TransactionsTable.DATE, dateFormat.format(transaction.date.getTime()));
@@ -284,16 +383,49 @@ public class RecordFragment extends Fragment
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getActivity(), EntriesProvider.CATEGORIES_URI, PROJECTION, SELECTION, SELECTIONARGS, SORTORDER);
+        String[] projection = {
+                TransactionsTable.ID + " AS _id",
+                TransactionsTable.CATEGORY, // for convenience
+        };
+        String selection;
+        String[] selectionArgs;
+        String sortOrder = "MAX(" + TransactionsTable.TIME_CREATED + ") DESC";
+
+        switch (id) {
+            case EXPENSE:
+                selection = TransactionsTable.TYPE + "=?";
+                selectionArgs = new String[]{Transaction.EXPENSE};
+                return new CursorLoader(getActivity(), EntriesProvider.CATEGORIES_URI, projection, selection, selectionArgs, sortOrder);
+            case INCOME:
+                selection = TransactionsTable.TYPE + "=?";
+                selectionArgs = new String[]{Transaction.INCOME};
+                return new CursorLoader(getActivity(), EntriesProvider.CATEGORIES_URI, projection, selection, selectionArgs, sortOrder);
+            default:
+                throw new IllegalArgumentException("Invalid id for Loader: " + id);
+        }
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mAdapter.swapCursor(data);
+        switch (loader.getId()) {
+            case EXPENSE:
+                expenseAdapter.swapCursor(data);
+                break;
+            case INCOME:
+                incomeAdapter.swapCursor(data);
+                break;
+        }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mAdapter.swapCursor(null);
+        switch (loader.getId()) {
+            case EXPENSE:
+                expenseAdapter.swapCursor(null);
+                break;
+            case INCOME:
+                incomeAdapter.swapCursor(null);
+                break;
+        }
     }
 }

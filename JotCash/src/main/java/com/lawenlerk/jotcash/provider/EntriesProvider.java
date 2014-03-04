@@ -1,6 +1,7 @@
 package com.lawenlerk.jotcash.provider;
 
 import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -40,13 +41,16 @@ public class EntriesProvider extends ContentProvider {
     public static final Uri TRANSACTIONS_URI = Uri.parse("content://" + AUTHORITY + "/" + TransactionsTable.TABLE_NAME);
     public static final Uri CATEGORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + "categories");  // For convenience to utilise groupby
 
+    public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + TransactionsTable.TABLE_NAME;
+    public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + TransactionsTable.ITEM_NAME;
+
     @Override
     public boolean onCreate() {
         entriesDatabaseHelper = new EntriesDatabaseHelper(
                 getContext(),   // the application context
                 DBNAME,         // the name of the database
                 null,           // uses the default SQLite cursor
-                2               // the version number
+                3               // the version number
         );
         return true;
     }
@@ -63,11 +67,11 @@ public class EntriesProvider extends ContentProvider {
                 break;
             case TRANSACTION_ID:
                 queryBuilder.setTables(TransactionsTable.TABLE_NAME);
-                queryBuilder.appendWhere(TransactionsTable.CATEGORY + "=" + uri.getLastPathSegment());
+                queryBuilder.appendWhere(TransactionsTable.ID + "=" + uri.getLastPathSegment());
                 break;
             case CATEGORIES:
                 queryBuilder.setTables(TransactionsTable.TABLE_NAME);
-                groupBy = TransactionsTable.CATEGORY;
+                groupBy = TransactionsTable.CATEGORY + ", " + TransactionsTable.TYPE;
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
@@ -134,8 +138,6 @@ public class EntriesProvider extends ContentProvider {
 
     @Override
     public int update(Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
-        // Do not use this in the UI to update an existing transaction, create a new transaction and delete the old one instead.
-        // This is only for internal use
 
         int rowsUpdated = 0;
         String id;
@@ -150,9 +152,9 @@ public class EntriesProvider extends ContentProvider {
                 id = uri.getLastPathSegment();
 
                 if (TextUtils.isEmpty(selection)) {
-                    rowsUpdated = database.update(TransactionsTable.TABLE_NAME, contentValues, TransactionsTable.CATEGORY + "=" + id, null);
+                    rowsUpdated = database.update(TransactionsTable.TABLE_NAME, contentValues, TransactionsTable.ID + "=" + id, null);
                 } else {
-                    rowsUpdated = database.update(TransactionsTable.TABLE_NAME, contentValues, TransactionsTable.CATEGORY + "=" + id + " AND " + selection, selectionArgs);
+                    rowsUpdated = database.update(TransactionsTable.TABLE_NAME, contentValues, TransactionsTable.ID + "=" + id + " AND " + selection, selectionArgs);
                 }
                 break;
             default:

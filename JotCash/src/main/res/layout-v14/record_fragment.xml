@@ -14,32 +14,42 @@
 
         <Button
             android:id="@+id/etAmount"
-            android:layout_width="wrap_content"
+            style="@android:style/Widget.Holo.Light.EditText"
+            android:layout_width="fill_parent"
             android:layout_height="@dimen/touchables_min_length"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginBottom="@dimen/vertical_margin_min"
             android:layout_marginTop="@dimen/vertical_margin_min"
-            android:layout_toLeftOf="@+id/swExpenseIncome"
             android:ems="10"
+            android:textAlignment="textEnd"
             android:hint="@string/amount"
-            style="@android:style/Widget.Holo.Light.EditText"
             android:singleLine="true" />
 
-        <Switch
-            android:id="@+id/swExpenseIncome"
-            android:layout_width="wrap_content"
+        <RadioGroup
+            android:id="@+id/rgType"
+            android:layout_width="fill_parent"
             android:layout_height="@dimen/touchables_min_length"
-            android:layout_alignBottom="@+id/etAmount"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
+            android:layout_below="@+id/etAmount"
             android:layout_marginBottom="@dimen/vertical_margin_min"
             android:layout_marginTop="@dimen/vertical_margin_min"
-            android:checked="false"
-            android:textOff="@string/expense"
-            android:textOn="@string/income"
-            android:thumb="@drawable/income_expense_switch" />
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rbExpense"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/touchables_min_length"
+                android:layout_weight="1"
+                android:text="@string/expense" />
+
+            <RadioButton
+                android:id="@+id/rbIncome"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/touchables_min_length"
+                android:layout_weight="1"
+                android:text="@string/income" />
+        </RadioGroup>
 
 
         <Button
@@ -49,19 +59,19 @@
             android:layout_height="@dimen/touchables_min_length"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/swExpenseIncome"
+            android:layout_below="@+id/rgType"
             android:layout_marginBottom="@dimen/vertical_margin_min"
             android:layout_marginTop="@dimen/vertical_margin_min"
             android:text="@string/date_picker_placeholder" />
 
         <EditText
-            android:hint="Description"
             android:id="@+id/etDescription"
-            android:layout_below="@+id/btDatePicker"
             android:layout_width="fill_parent"
+            android:layout_height="@dimen/touchables_min_length"
+            android:layout_below="@+id/btDatePicker"
             android:layout_marginBottom="@dimen/vertical_margin_min"
             android:layout_marginTop="@dimen/vertical_margin_min"
-            android:layout_height="@dimen/touchables_min_length" />
+            android:hint="Description" />
     </RelativeLayout>
 
 
@@ -91,10 +101,10 @@
                 android:id="@+id/etCategorySearch"
                 android:layout_width="fill_parent"
                 android:layout_height="@dimen/touchables_min_length"
+                android:background="@android:color/white"
                 android:hint="@string/choose_category"
                 android:paddingLeft="@dimen/activity_horizontal_margin"
                 android:paddingRight="@dimen/touchables_min_length"
-                android:background="@android:color/white"
                 android:singleLine="true" />
 
             <ImageButton

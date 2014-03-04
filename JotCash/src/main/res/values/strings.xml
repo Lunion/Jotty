@@ -20,5 +20,10 @@
     <string name="add_a_transaction">Add a transaction</string>
     <string name="database_date_format">yyyy-MM-dd</string>
     <string name="database_date_time_format">yyyy-MM-dd HH:mm:ss.SSS</string>
+    <string name="title_activity_test">Test</string>
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
+    <string name="category_prompt">Please enter a category</string>
 
 </resources>

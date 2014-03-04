@@ -1,16 +1,20 @@
 package com.lawenlerk.jotcash;
 
 
+import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.lawenlerk.jotcash.database.TransactionsTable;
@@ -43,8 +47,17 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
 
         mAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, fromColumns, toViews, 0);
         lvTransactions.setAdapter(mAdapter);
-
         getLoaderManager().initLoader(0, null, this);
+        lvTransactions.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long id) {
+                Log.d("OverviewFragment", Long.toString(id));
+                Intent intent = new Intent(getActivity(), RecordActivity.class);
+                Uri transactionUri = Uri.parse(EntriesProvider.TRANSACTIONS_URI + "/" + id);
+                intent.putExtra(EntriesProvider.CONTENT_ITEM_TYPE, transactionUri);
+                startActivity(intent);
+            }
+        });
 
 
         return view;

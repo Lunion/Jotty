@@ -10,35 +10,35 @@ public class Transaction {
     public int id;
     public Calendar timeCreated;
     public double amount;
-    int transactionType;
+    String type;
     public Calendar date;
     public String category;
     public String description;
 
-    public static int EXPENSE = 1;
-    public static int INCOME = 2;
+    public static final String EXPENSE = "EXPENSE";
+    public static final String INCOME = "INCOME";
 
     public Transaction() {
         timeCreated = Calendar.getInstance();
         amount = 0;
-        transactionType = Transaction.EXPENSE;
+        type = Transaction.EXPENSE;
         date = Calendar.getInstance();
         category = "";
         description = "";
     }
 
-    public Transaction(double amount, int transactionType, Calendar date, String category, String description) {
+    public Transaction(double amount, String type, Calendar date, String category, String description) {
         this.timeCreated = Calendar.getInstance();
 
         this.amount = amount;
-        this.transactionType = transactionType;
+        this.type = type;
         this.date = date;
         this.category = category;
         this.description = description;
     }
 
     public boolean isComplete() {
-        if (timeCreated == null || amount < 0 || transactionType == -1 || date == null || category == null) {
+        if (timeCreated == null || amount < 0 || type == null || date == null || category == null) {
             return false;
         } else {
             return true;

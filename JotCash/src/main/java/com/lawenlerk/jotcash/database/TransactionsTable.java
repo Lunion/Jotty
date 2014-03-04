@@ -9,6 +9,8 @@ import android.util.Log;
 public class TransactionsTable {
     public static final String TABLE_NAME = "transactions";
 
+    public static final String ITEM_NAME = "transaction";
+
     public static final String ID = "_id";
     public static final String TIME_CREATED = "time_created";
     public static final String AMOUNT = "amount";
@@ -25,7 +27,7 @@ public class TransactionsTable {
             AMOUNT + " REAL NOT NULL, " +
             TYPE + " TEXT NOT NULL, " +
             DATE + " TEXT NOT NULL, " +
-            DESCRIPTION + " TEXT NOT NULL, " +
+            DESCRIPTION + " TEXT, " +
             CATEGORY + " TEXT NOT NULL);";
 
     public static void onCreate(SQLiteDatabase database) {
@@ -34,7 +36,7 @@ public class TransactionsTable {
     }
 
     public static void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
-        Log.w(TransactionsTable.class.getName(), "Upgrading database from version " + oldVersion + " to " +newVersion + ", which will destroy all old data");
+        Log.w(TransactionsTable.class.getName(), "Upgrading database from version " + oldVersion + " to " + newVersion + ", which will destroy all old data");
         database.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(database);
     }
