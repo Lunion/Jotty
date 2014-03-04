@@ -25,6 +25,7 @@ public class EntriesProvider extends ContentProvider {
     // Integer codes/constants for UriMatcher
     private static final int TRANSACTIONS = 1;
     private static final int TRANSACTION_ID = 2;
+    private static final int CATEGORIES = 3;
 
     private static final String AUTHORITY = "com.lawenlerk.jotcash.provider";
 
@@ -33,9 +34,11 @@ public class EntriesProvider extends ContentProvider {
     static {
         sUriMatcher.addURI(AUTHORITY, TransactionsTable.TABLE_NAME, TRANSACTIONS);
         sUriMatcher.addURI(AUTHORITY, TransactionsTable.TABLE_NAME + "/#", TRANSACTION_ID);
+        sUriMatcher.addURI(AUTHORITY, "categories", CATEGORIES);
     }
 
     public static final Uri TRANSACTIONS_URI = Uri.parse("content://" + AUTHORITY + "/" + TransactionsTable.TABLE_NAME);
+    public static final Uri CATEGORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + "categories");  // For convenience to utilise groupby
 
     @Override
     public boolean onCreate() {
@@ -53,6 +56,7 @@ public class EntriesProvider extends ContentProvider {
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         SQLiteDatabase database = entriesDatabaseHelper.getReadableDatabase();
 
+        String groupBy = null;
         switch (sUriMatcher.match(uri)) {
             case TRANSACTIONS:
                 queryBuilder.setTables(TransactionsTable.TABLE_NAME);
@@ -61,11 +65,15 @@ public class EntriesProvider extends ContentProvider {
                 queryBuilder.setTables(TransactionsTable.TABLE_NAME);
                 queryBuilder.appendWhere(TransactionsTable.CATEGORY + "=" + uri.getLastPathSegment());
                 break;
+            case CATEGORIES:
+                queryBuilder.setTables(TransactionsTable.TABLE_NAME);
+                groupBy = TransactionsTable.CATEGORY;
+                break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
 
-        Cursor cursor = queryBuilder.query(database, projection, selection, selectionArgs, null, null, sortOrder);
+        Cursor cursor = queryBuilder.query(database, projection, selection, selectionArgs, groupBy, null, sortOrder);
         Log.d("EntriesProvider", Integer.toString(cursor.getCount()));
         Log.v("EntriesProvider", "Queried from the database");
         cursor.setNotificationUri(getContext().getContentResolver(), uri);

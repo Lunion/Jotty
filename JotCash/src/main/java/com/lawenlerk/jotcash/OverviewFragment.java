@@ -28,6 +28,9 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
             TransactionsTable.ID,
             TransactionsTable.AMOUNT
     };
+    private static final String SELECTION = null;
+    private static final String[] SELECTIONARGS = null;
+    private static final String SORTORDER = "date(" + TransactionsTable.DATE + ") DESC" + ", " + "datetime(" + TransactionsTable.TIME_CREATED + ") DESC";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -54,7 +57,7 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getActivity(), EntriesProvider.TRANSACTIONS_URI, PROJECTION, null, null, null);
+        return new CursorLoader(getActivity(), EntriesProvider.TRANSACTIONS_URI, PROJECTION, SELECTION, SELECTIONARGS, SORTORDER);
     }
 
     @Override

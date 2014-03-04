@@ -50,12 +50,12 @@ public class RecordFragment extends Fragment
 
     SimpleCursorAdapter mAdapter;
     private static final String[] PROJECTION = {
-            "DISTINCT " + TransactionsTable.CATEGORY + " AS _id",
+            TransactionsTable.CATEGORY + " AS _id",
             TransactionsTable.CATEGORY, // for convenience
     };
     private static final String SELECTION = null;
     private static final String[] SELECTIONARGS = null;
-    private static final String SORTORDER = "date(" + TransactionsTable.TIME_CREATED + ") DESC";
+    private static final String SORTORDER = "MAX(" + TransactionsTable.TIME_CREATED + ") DESC";
 
 
     @Override
@@ -271,7 +271,7 @@ public class RecordFragment extends Fragment
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getActivity(), EntriesProvider.TRANSACTIONS_URI, PROJECTION, SELECTION, SELECTIONARGS, SORTORDER);
+        return new CursorLoader(getActivity(), EntriesProvider.CATEGORIES_URI, PROJECTION, SELECTION, SELECTIONARGS, SORTORDER);
     }
 
     @Override
