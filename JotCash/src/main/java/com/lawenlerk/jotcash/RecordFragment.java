@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -37,7 +38,8 @@ import java.util.Calendar;
  */
 public class RecordFragment extends Fragment
         implements CalendarDatePickerDialog.OnDateSetListener,
-        NumberPickerDialogFragment.NumberPickerDialogHandler, LoaderManager.LoaderCallbacks<Cursor> {
+        NumberPickerDialogFragment.NumberPickerDialogHandler,
+        LoaderManager.LoaderCallbacks<Cursor> {
     Transaction transaction = new Transaction();
 
     View view;
@@ -50,7 +52,7 @@ public class RecordFragment extends Fragment
 
     SimpleCursorAdapter mAdapter;
     private static final String[] PROJECTION = {
-            TransactionsTable.CATEGORY + " AS _id",
+            TransactionsTable.ID + " AS _id",
             TransactionsTable.CATEGORY, // for convenience
     };
     private static final String SELECTION = null;
@@ -130,6 +132,17 @@ public class RecordFragment extends Fragment
             mAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, fromColumns, toViews, 0);
             lvCategoryPicker.setAdapter(mAdapter);
             getLoaderManager().initLoader(0, null, this);
+            lvCategoryPicker.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                    Log.d("RecordFragment", Long.toString(id));
+                    Cursor cursor = mAdapter.getCursor();
+                    cursor.moveToPosition(position);
+                    transaction.category = cursor.getString(cursor.getColumnIndex(TransactionsTable.CATEGORY));
+                    saveTransaction(transaction);
+                    getActivity().finish();
+                }
+            });
 
 
             // Set up category editText
