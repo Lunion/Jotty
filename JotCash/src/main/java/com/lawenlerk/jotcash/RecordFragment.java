@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -46,8 +47,7 @@ public class RecordFragment extends Fragment
     private static final int EXPENSE = 1;
     private static final int INCOME = 2;
     Transaction transaction = new Transaction();
-    NumberPickerBuilder numberPickerBuilder;
-    CalendarDatePickerDialog calendarDatePickerDialog;
+
     View view;
     Button btAmount;
     RadioButton rbExpense;
@@ -118,14 +118,7 @@ public class RecordFragment extends Fragment
             btDatePicker.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    FragmentManager fragmentManager = getChildFragmentManager();
-
-                    calendarDatePickerDialog = CalendarDatePickerDialog.newInstance(
-                            RecordFragment.this,
-                            transaction.date.get(Calendar.YEAR),
-                            transaction.date.get(Calendar.MONTH),
-                            transaction.date.get(Calendar.DAY_OF_MONTH));
-                    calendarDatePickerDialog.show(fragmentManager, "calendarDatePickerDialog");
+                    launchCalendarDatePicker();
 
                 }
             });
@@ -197,22 +190,19 @@ public class RecordFragment extends Fragment
                 setDescription(savedInstanceState.getString(TransactionsTable.DESCRIPTION));
                 setCategory(savedInstanceState.getString(TransactionsTable.CATEGORY));
 
-                // Check if there is a existing NumberPickerDialogFragment from a NumberPickerBuilder
-                // The tag used here is set from within NumberPickerBuilder and not by us
-                NumberPickerDialogFragment numberPickerDialogFragment = (NumberPickerDialogFragment) getChildFragmentManager().findFragmentByTag("number_dialog");
-                if (numberPickerDialogFragment == null) {
-                    Toast.makeText(getActivity(), "numberPickerBuilder is null", Toast.LENGTH_SHORT).show();
-                    Log.d("RecordFragment", "numberPickerBuilder is null");
-                } else {
+                // Check if there is a existing NumberPickerDialogFragment
+                NumberPickerDialogFragment numberPickerDialogFragment = (NumberPickerDialogFragment) getChildFragmentManager().findFragmentByTag("numberPickerDialogFragment");
+                if (numberPickerDialogFragment != null) {
                     Toast.makeText(getActivity(), "numberPickerBuilder is not null", Toast.LENGTH_SHORT).show();
                     Log.d("RecordFragment", "numberPickerBuilder is not null");
                     numberPickerDialogFragment.setTargetFragment(this, 0);
                 }
-//                numberPickerBuilder.setTargetFragment(this);
-                calendarDatePickerDialog = (CalendarDatePickerDialog) getChildFragmentManager().findFragmentByTag("calendarDatePickerDialog");
-                if (calendarDatePickerDialog != null) {
-                    Toast.makeText(getActivity(), "calendarDatePickerDialog is not null", Toast.LENGTH_SHORT).show();
-                    calendarDatePickerDialog.setOnDateSetListener(RecordFragment.this);
+
+                // Check if there is an existing CalendarDatePickerDialog(Fragment)
+                CalendarDatePickerDialog calendarDatePickerDialogFragment = (CalendarDatePickerDialog) getChildFragmentManager().findFragmentByTag("calendarDatePickerDialogFragment");
+                if (calendarDatePickerDialogFragment != null) {
+                    Toast.makeText(getActivity(), "calendarDatePickerDialogFragment is not null", Toast.LENGTH_SHORT).show();
+                    calendarDatePickerDialogFragment.setOnDateSetListener(RecordFragment.this);
                 }
 
             }
@@ -232,6 +222,17 @@ public class RecordFragment extends Fragment
 
 
         return view;
+    }
+
+    private void launchCalendarDatePicker() {
+        FragmentManager fragmentManager = getChildFragmentManager();
+
+        CalendarDatePickerDialog calendarDatePickerDialogFragment = CalendarDatePickerDialog.newInstance(
+                this,
+                transaction.date.get(Calendar.YEAR),
+                transaction.date.get(Calendar.MONTH),
+                transaction.date.get(Calendar.DAY_OF_MONTH));
+        calendarDatePickerDialogFragment.show(fragmentManager, "calendarDatePickerDialogFragment");
     }
 
     private void saveTransaction(Transaction transaction) {
@@ -314,13 +315,23 @@ public class RecordFragment extends Fragment
     }
 
     private void launchNumberPicker() {
-        numberPickerBuilder = new NumberPickerBuilder();
+/*        numberPickerBuilder = new NumberPickerBuilder();
         numberPickerBuilder.setFragmentManager(getChildFragmentManager());
         numberPickerBuilder.setStyleResId(R.style.BetterPickersDialogFragment_Light);
         numberPickerBuilder.setTargetFragment(this);
         numberPickerBuilder.setPlusMinusVisibility(View.INVISIBLE);
         numberPickerBuilder.setLabelText("SGD");    // TODO let user select currency string from settings
-        numberPickerBuilder.show();
+        numberPickerBuilder.show();*/
+
+        FragmentManager fragmentManager = getChildFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        NumberPickerDialogFragment numberPickerDialogFragment = NumberPickerDialogFragment.newInstance(0, R.style.BetterPickersDialogFragment_Light, null, null, View.INVISIBLE, View.VISIBLE, "SGD");
+        numberPickerDialogFragment.setTargetFragment(this, 0);
+        numberPickerDialogFragment.show(fragmentManager, "numberPickerDialogFragment");
+
+
+
 
     }
 
@@ -395,7 +406,6 @@ public class RecordFragment extends Fragment
 
         outState.putString(TransactionsTable.DESCRIPTION, transaction.description);
         outState.putString(TransactionsTable.CATEGORY, transaction.category);
-
 
 
 //        outState.putParcelable();
