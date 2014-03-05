@@ -193,15 +193,12 @@ public class RecordFragment extends Fragment
                 // Check if there is a existing NumberPickerDialogFragment
                 NumberPickerDialogFragment numberPickerDialogFragment = (NumberPickerDialogFragment) getChildFragmentManager().findFragmentByTag("numberPickerDialogFragment");
                 if (numberPickerDialogFragment != null) {
-                    Toast.makeText(getActivity(), "numberPickerBuilder is not null", Toast.LENGTH_SHORT).show();
-                    Log.d("RecordFragment", "numberPickerBuilder is not null");
                     numberPickerDialogFragment.setTargetFragment(this, 0);
                 }
 
                 // Check if there is an existing CalendarDatePickerDialog(Fragment)
                 CalendarDatePickerDialog calendarDatePickerDialogFragment = (CalendarDatePickerDialog) getChildFragmentManager().findFragmentByTag("calendarDatePickerDialogFragment");
                 if (calendarDatePickerDialogFragment != null) {
-                    Toast.makeText(getActivity(), "calendarDatePickerDialogFragment is not null", Toast.LENGTH_SHORT).show();
                     calendarDatePickerDialogFragment.setOnDateSetListener(RecordFragment.this);
                 }
 
@@ -320,13 +317,13 @@ public class RecordFragment extends Fragment
         numberPickerBuilder.setStyleResId(R.style.BetterPickersDialogFragment_Light);
         numberPickerBuilder.setTargetFragment(this);
         numberPickerBuilder.setPlusMinusVisibility(View.INVISIBLE);
-        numberPickerBuilder.setLabelText("SGD");    // TODO let user select currency string from settings
+        numberPickerBuilder.setLabelText("SGD");
         numberPickerBuilder.show();*/
 
         FragmentManager fragmentManager = getChildFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        NumberPickerDialogFragment numberPickerDialogFragment = NumberPickerDialogFragment.newInstance(0, R.style.BetterPickersDialogFragment_Light, null, null, View.INVISIBLE, View.VISIBLE, "SGD");
+        NumberPickerDialogFragment numberPickerDialogFragment = NumberPickerDialogFragment.newInstance(0, R.style.BetterPickersDialogFragment_Light, null, null, View.INVISIBLE, View.VISIBLE, "SGD");// TODO let user select currency string from settings
         numberPickerDialogFragment.setTargetFragment(this, 0);
         numberPickerDialogFragment.show(fragmentManager, "numberPickerDialogFragment");
 

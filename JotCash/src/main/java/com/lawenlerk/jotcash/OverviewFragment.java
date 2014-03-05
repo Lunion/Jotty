@@ -45,6 +45,7 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
         String[] fromColumns = {TransactionsTable.AMOUNT};
         int[] toViews = {android.R.id.text1};
 
+        // TODO use ListViewAnimations with ExpandableListView to group days
         mAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, fromColumns, toViews, 0);
         lvTransactions.setAdapter(mAdapter);
         getLoaderManager().initLoader(0, null, this);

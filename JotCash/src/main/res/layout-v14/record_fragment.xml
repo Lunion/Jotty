@@ -22,8 +22,9 @@
             android:layout_alignParentTop="true"
             android:layout_marginBottom="@dimen/vertical_margin_min"
             android:layout_marginTop="@dimen/vertical_margin_min"
+            android:focusable="false"
             android:ems="10"
-            android:textAlignment="textEnd"
+            android:gravity="right"
             android:hint="@string/amount"
             android:singleLine="true" />
 
@@ -71,7 +72,7 @@
             android:layout_below="@+id/btDatePicker"
             android:layout_marginBottom="@dimen/vertical_margin_min"
             android:layout_marginTop="@dimen/vertical_margin_min"
-            android:hint="Description" />
+            android:hint="@string/description" />
     </RelativeLayout>
 
 
@@ -84,6 +85,8 @@
 
         <ListView
             android:id="@+id/lvCategoryPicker"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/rlCategorySearch"
@@ -114,7 +117,8 @@
                 android:layout_alignRight="@+id/etCategorySearch"
                 android:layout_centerVertical="true"
                 android:background="@drawable/imagebutton_highlight"
-                android:src="@drawable/ic_action_send_now" />
+                android:src="@drawable/ic_action_send_now"
+                android:contentDescription="@string/add" />
 
         </RelativeLayout>
     </RelativeLayout>
