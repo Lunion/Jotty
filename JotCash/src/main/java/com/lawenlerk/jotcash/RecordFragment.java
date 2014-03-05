@@ -47,6 +47,7 @@ public class RecordFragment extends Fragment
     private static final int INCOME = 2;
     Transaction transaction = new Transaction();
     NumberPickerBuilder numberPickerBuilder;
+    CalendarDatePickerDialog calendarDatePickerDialog;
     View view;
     Button btAmount;
     RadioButton rbExpense;
@@ -75,10 +76,6 @@ public class RecordFragment extends Fragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (transactionUri == null) {
-            // This is not an existing transaction
-            launchNumberPicker();
-        }
     }
 
     @Override
@@ -123,7 +120,7 @@ public class RecordFragment extends Fragment
                 public void onClick(View view) {
                     FragmentManager fragmentManager = getChildFragmentManager();
 
-                    CalendarDatePickerDialog calendarDatePickerDialog = CalendarDatePickerDialog.newInstance(
+                    calendarDatePickerDialog = CalendarDatePickerDialog.newInstance(
                             RecordFragment.this,
                             transaction.date.get(Calendar.YEAR),
                             transaction.date.get(Calendar.MONTH),
@@ -176,20 +173,61 @@ public class RecordFragment extends Fragment
                 }
             });
 
-            Bundle extras = getActivity().getIntent().getExtras();
+
             // Check from savedInstanceState
-            if (savedInstanceState != null) {
-                transactionUri = savedInstanceState.getParcelable(EntriesProvider.CONTENT_ITEM_TYPE);
-                loadTransaction(transactionUri);
-            } else if (extras != null) {
-                transactionUri = extras.getParcelable(EntriesProvider.CONTENT_ITEM_TYPE);
-                loadTransaction(transactionUri);
+            if (savedInstanceState == null) {
+                // This is not a recreation, check if anything was passed in
+                Bundle extras = getActivity().getIntent().getExtras();
+                if (extras != null) {
+                    transactionUri = extras.getParcelable(EntriesProvider.CONTENT_ITEM_TYPE);
+                    loadTransaction(transactionUri);
+                }
             } else {
+                // This is a recreation, might be new or existing transaction
+                // Reload all values saved from last instance
+                transactionUri = savedInstanceState.getParcelable(EntriesProvider.CONTENT_ITEM_TYPE);
+                setAmount(savedInstanceState.getDouble(TransactionsTable.AMOUNT));
+                setType(savedInstanceState.getString(TransactionsTable.TYPE));
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.database_date_format));
+                try {
+                    setDate(simpleDateFormat.parse(savedInstanceState.getString(TransactionsTable.DATE)));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                setDescription(savedInstanceState.getString(TransactionsTable.DESCRIPTION));
+                setCategory(savedInstanceState.getString(TransactionsTable.CATEGORY));
+
+                // Check if there is a existing NumberPickerDialogFragment from a NumberPickerBuilder
+                // The tag used here is set from within NumberPickerBuilder and not by us
+                NumberPickerDialogFragment numberPickerDialogFragment = (NumberPickerDialogFragment) getChildFragmentManager().findFragmentByTag("number_dialog");
+                if (numberPickerDialogFragment == null) {
+                    Toast.makeText(getActivity(), "numberPickerBuilder is null", Toast.LENGTH_SHORT).show();
+                    Log.d("RecordFragment", "numberPickerBuilder is null");
+                } else {
+                    Toast.makeText(getActivity(), "numberPickerBuilder is not null", Toast.LENGTH_SHORT).show();
+                    Log.d("RecordFragment", "numberPickerBuilder is not null");
+                    numberPickerDialogFragment.setTargetFragment(this, 0);
+                }
+//                numberPickerBuilder.setTargetFragment(this);
+                calendarDatePickerDialog = (CalendarDatePickerDialog) getChildFragmentManager().findFragmentByTag("calendarDatePickerDialog");
+                if (calendarDatePickerDialog != null) {
+                    Toast.makeText(getActivity(), "calendarDatePickerDialog is not null", Toast.LENGTH_SHORT).show();
+                    calendarDatePickerDialog.setOnDateSetListener(RecordFragment.this);
+                }
+
+            }
+
+            // Check if this is an entirely new transaction
+            if (transactionUri == null && savedInstanceState == null) {
+                // If this is a new transaction and not recreation as well
                 // Initialise values
                 setAmount(0.0);
                 setType(Transaction.EXPENSE);
                 setDate(Calendar.getInstance());
+                launchNumberPicker();
             }
+
+
         }
 
 
@@ -276,15 +314,14 @@ public class RecordFragment extends Fragment
     }
 
     private void launchNumberPicker() {
-        if (numberPickerBuilder == null) {
-            numberPickerBuilder = new NumberPickerBuilder();
-            numberPickerBuilder.setFragmentManager(getChildFragmentManager());
-            numberPickerBuilder.setStyleResId(R.style.BetterPickersDialogFragment_Light);
-            numberPickerBuilder.setTargetFragment(this);
-            numberPickerBuilder.setPlusMinusVisibility(View.INVISIBLE);
-            numberPickerBuilder.setLabelText("SGD");    // TODO let user select currency string from settings
-            numberPickerBuilder.show();
-        }
+        numberPickerBuilder = new NumberPickerBuilder();
+        numberPickerBuilder.setFragmentManager(getChildFragmentManager());
+        numberPickerBuilder.setStyleResId(R.style.BetterPickersDialogFragment_Light);
+        numberPickerBuilder.setTargetFragment(this);
+        numberPickerBuilder.setPlusMinusVisibility(View.INVISIBLE);
+        numberPickerBuilder.setLabelText("SGD");    // TODO let user select currency string from settings
+        numberPickerBuilder.show();
+
     }
 
     public void setDate(Date date) {
@@ -347,7 +384,21 @@ public class RecordFragment extends Fragment
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable();
+
+        outState.putParcelable(EntriesProvider.CONTENT_ITEM_TYPE, transactionUri);
+
+        outState.putDouble(TransactionsTable.AMOUNT, transaction.amount);
+        outState.putString(TransactionsTable.TYPE, transaction.type);
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.database_date_format));
+        outState.putString(TransactionsTable.DATE, simpleDateFormat.format(transaction.date.getTime()));
+
+        outState.putString(TransactionsTable.DESCRIPTION, transaction.description);
+        outState.putString(TransactionsTable.CATEGORY, transaction.category);
+
+
+
+//        outState.putParcelable();
     }
 
     @Override
