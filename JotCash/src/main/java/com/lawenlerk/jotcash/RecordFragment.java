@@ -2,6 +2,7 @@ package com.lawenlerk.jotcash;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,17 +12,16 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.doomonafireball.betterpickers.calendardatepicker.CalendarDatePickerDialog;
@@ -53,11 +53,13 @@ public class RecordFragment extends Fragment
     RadioButton rbIncome;
     Button btDatePicker;
     EditText etDescription;
-    ListView lvCategoryPicker;
+    LinearLayout flvCategoryPicker;
     EditText etCategorySearch;
     ImageButton ibCategoryAdd;
-    SimpleCursorAdapter expenseAdapter;
-    SimpleCursorAdapter incomeAdapter;
+    /*    SimpleCursorAdapter expenseAdapter;
+        SimpleCursorAdapter incomeAdapter;*/
+    Cursor expenseCategoriesCursor;
+    Cursor incomeCategoriesCursor;
     private Uri transactionUri = null;
 
 
@@ -127,10 +129,18 @@ public class RecordFragment extends Fragment
 
 
             // Set up category list
-            lvCategoryPicker = (ListView) view.findViewById(R.id.lvCategoryPicker);
-            loadCategories();
+            flvCategoryPicker = (LinearLayout) view.findViewById(R.id.flvCategoryPicker);
 
-            lvCategoryPicker.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+/*            expenseAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, fromColumns, toViews, 0);
+            incomeAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, fromColumns, toViews, 0);*/
+
+            expenseCategoriesCursor = null;
+            incomeCategoriesCursor = null;
+
+            getLoaderManager().initLoader(EXPENSE, null, this);
+            getLoaderManager().initLoader(INCOME, null, this);
+
+/*            flvCategoryPicker.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                     Log.d("RecordFragment", Long.toString(id));
@@ -146,10 +156,16 @@ public class RecordFragment extends Fragment
                     cursor.close();
                     saveTransaction(transaction);
                 }
-            });
+            });*/
 
             // Set up category etCategorySearch
             etCategorySearch = (EditText) view.findViewById(R.id.etCategorySearch);
+            etCategorySearch.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                }
+            });
 
             // Set up category image button
             ibCategoryAdd = (ImageButton) view.findViewById(R.id.ibCategoryAdd);
@@ -219,6 +235,55 @@ public class RecordFragment extends Fragment
 
         return view;
     }
+
+    private void populateFixedListView(ViewGroup viewGroup, int layout, Cursor cursor, String[] fromColumns, int[] toViews) {
+        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+
+        if (cursor != null) {
+            viewGroup.removeAllViews();
+            cursor.moveToFirst();
+            cursor.moveToPrevious(); // Because while loop will move one step forward
+            while (cursor.moveToNext()) {
+                final int cursorPosition = cursor.getPosition(); // fix to pass cursorPosition to inner method
+                View view = inflater.inflate(layout, viewGroup, false);
+
+                assert view != null;
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // Get category name from the current cursor item
+                        Cursor cursor;
+
+                        if (transaction.type.equals(Transaction.EXPENSE)) {
+                            cursor = expenseCategoriesCursor;
+                        } else {
+                            cursor = incomeCategoriesCursor;
+                        }
+
+                        cursor.moveToPosition(cursorPosition);
+
+                        int categoryColumnIndex = cursor.getColumnIndex(TransactionsTable.CATEGORY);
+                        transaction.category = cursor.getString(categoryColumnIndex);
+                        saveTransaction(transaction);
+
+                    }
+                });
+
+                for (int i = 0; i < fromColumns.length; i++) {
+                    ((TextView) view.findViewById(toViews[i])).setText(cursor.getString(cursor.getColumnIndex(fromColumns[i])));
+                }
+                Log.d(RecordFragment.class.getName(), "Inserting view");
+                viewGroup.addView(view);
+
+                if (cursor.getPosition() < cursor.getCount() - 1) {
+//                    inflater.inflate(R.layout.line, viewGroup);
+                }
+            }
+        }
+
+    }
+
 
     private void launchCalendarDatePicker() {
         FragmentManager fragmentManager = getChildFragmentManager();
@@ -310,15 +375,7 @@ public class RecordFragment extends Fragment
 
     private void setCategory(String category) {
         transaction.category = category;
-    }
-
-    private void loadCategories() {
-        String[] fromColumns = {TransactionsTable.CATEGORY};
-        int[] toViews = {android.R.id.text1};
-        expenseAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, fromColumns, toViews, 0);
-        incomeAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, fromColumns, toViews, 0);
-        getLoaderManager().initLoader(EXPENSE, null, this);
-        getLoaderManager().initLoader(INCOME, null, this);
+        etCategorySearch.setText(transaction.category);
     }
 
     private void launchNumberPicker() {
@@ -366,13 +423,18 @@ public class RecordFragment extends Fragment
 
     public void setType(String type) {
         transaction.type = type;
+        String[] fromColumns = {TransactionsTable.CATEGORY};
+        int[] toViews = {android.R.id.text1};
         if (type.equals(Transaction.EXPENSE)) {
-            lvCategoryPicker.setAdapter(expenseAdapter);
+/*            flvCategoryPicker.setAdapter(expenseAdapter);*/
+            // Change the fixed listview's cursor
+            populateFixedListView(flvCategoryPicker, android.R.layout.simple_list_item_1, expenseCategoriesCursor, fromColumns, toViews);
             if (!rbExpense.isChecked()) {
                 rbExpense.setChecked(true);
             }
         } else {
-            lvCategoryPicker.setAdapter(incomeAdapter);
+/*            flvCategoryPicker.setAdapter(incomeAdapter);*/
+            populateFixedListView(flvCategoryPicker, android.R.layout.simple_list_item_1, incomeCategoriesCursor, fromColumns, toViews);
             if (!rbIncome.isChecked()) {
                 rbIncome.setChecked(true);
             }
@@ -500,10 +562,16 @@ public class RecordFragment extends Fragment
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         switch (loader.getId()) {
             case EXPENSE:
-                expenseAdapter.swapCursor(data);
+                expenseCategoriesCursor = data;
+                // TODO refresh list only. do not change radio button
+                setType(Transaction.EXPENSE); // To refresh the list
+/*                expenseAdapter.swapCursor(data);*/
                 break;
             case INCOME:
-                incomeAdapter.swapCursor(data);
+                incomeCategoriesCursor = data;
+                // TODO refresh list only. do not change radio button
+                setType(Transaction.INCOME); // To refresh the list
+/*                incomeAdapter.swapCursor(data);*/
                 break;
         }
     }
@@ -512,10 +580,12 @@ public class RecordFragment extends Fragment
     public void onLoaderReset(Loader<Cursor> loader) {
         switch (loader.getId()) {
             case EXPENSE:
-                expenseAdapter.swapCursor(null);
+                expenseCategoriesCursor = null;
+//                expenseAdapter.swapCursor(null);
                 break;
             case INCOME:
-                incomeAdapter.swapCursor(null);
+                incomeCategoriesCursor = null;
+//                incomeAdapter.swapCursor(null);
                 break;
         }
     }

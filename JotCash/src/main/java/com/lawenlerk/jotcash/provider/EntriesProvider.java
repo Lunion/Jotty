@@ -70,6 +70,7 @@ public class EntriesProvider extends ContentProvider {
                 queryBuilder.appendWhere(TransactionsTable.ID + "=" + uri.getLastPathSegment());
                 break;
             case CATEGORIES:
+                // TODO Provide a list of default example categories for user to choose
                 queryBuilder.setTables(TransactionsTable.TABLE_NAME);
                 groupBy = TransactionsTable.CATEGORY + ", " + TransactionsTable.TYPE;
                 break;

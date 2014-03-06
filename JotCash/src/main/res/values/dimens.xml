@@ -5,5 +5,7 @@
     <dimen name="touchables_min_length">44dp</dimen>
     <dimen name="vertical_margin_min">4dp</dimen>
     <dimen name="edit_text_padding">48dp</dimen>
+    <dimen name="card_margin">16dp</dimen>
+    <dimen name="card_padding">16dp</dimen>
 
 </resources>
