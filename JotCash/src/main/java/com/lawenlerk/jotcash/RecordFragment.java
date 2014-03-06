@@ -564,12 +564,14 @@ public class RecordFragment extends Fragment
             case EXPENSE:
                 expenseCategoriesCursor = data;
                 // TODO refresh list only. do not change radio button
+                // TODO change to adapter
                 setType(Transaction.EXPENSE); // To refresh the list
 /*                expenseAdapter.swapCursor(data);*/
                 break;
             case INCOME:
                 incomeCategoriesCursor = data;
                 // TODO refresh list only. do not change radio button
+                // TODO change to adapter
                 setType(Transaction.INCOME); // To refresh the list
 /*                incomeAdapter.swapCursor(data);*/
                 break;

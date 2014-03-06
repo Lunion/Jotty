@@ -19,6 +19,7 @@
             <LinearLayout
                 android:id="@+id/llTransactionDetails"
                 style="@style/card"
+                android:padding="@dimen/card_padding"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -83,6 +84,8 @@
             <LinearLayout
                 android:id="@+id/flvCategoryPicker"
                 style="@style/card"
+                android:padding="@dimen/card_padding"
+                android:minHeight="@dimen/touchables_min_length"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="52dp"
@@ -95,14 +98,15 @@
         style="@style/card"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/touchables_min_length"
+        android:layout_marginBottom="@dimen/card_padding"
         android:layout_alignParentBottom="true">
 
         <EditText
             android:id="@+id/etCategorySearch"
             android:layout_width="fill_parent"
             android:layout_height="@dimen/touchables_min_length"
-            android:background="@android:color/white"
             android:hint="@string/choose_category"
+            android:background="@android:color/white"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/touchables_min_length"
             android:singleLine="true" />
