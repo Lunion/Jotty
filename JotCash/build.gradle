@@ -25,6 +25,7 @@ repositories {
 dependencies {
     compile 'com.android.support:support-v4:19.0.1'
     compile 'com.android.support:appcompat-v7:19.0.1'
+    compile 'com.github.frankiesardo:linearlistview:1.0.1@aar'
     //    compile project(':libraries:swipelistview')
     compile("com.doomonafireball.betterpickers:library:1.5.2") {
         exclude group: 'com.android.support', module: 'support-v4'

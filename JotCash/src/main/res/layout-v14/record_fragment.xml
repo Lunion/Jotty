@@ -19,18 +19,16 @@
             <LinearLayout
                 android:id="@+id/llTransactionDetails"
                 style="@style/card"
-                android:padding="@dimen/card_padding"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:padding="@dimen/card_padding"
                 android:orientation="vertical">
 
                 <Button
                     android:id="@+id/etAmount"
                     style="@android:style/Widget.Holo.Light.EditText"
                     android:layout_width="fill_parent"
-                    android:layout_height="@dimen/touchables_min_length"
-                    android:layout_marginBottom="@dimen/vertical_margin_min"
-                    android:layout_marginTop="@dimen/vertical_margin_min"
+                    android:layout_height="48dp"
                     android:ems="10"
                     android:focusable="false"
                     android:gravity="right"
@@ -41,8 +39,6 @@
                     android:id="@+id/rgType"
                     android:layout_width="fill_parent"
                     android:layout_height="@dimen/touchables_min_length"
-                    android:layout_marginBottom="@dimen/vertical_margin_min"
-                    android:layout_marginTop="@dimen/vertical_margin_min"
                     android:orientation="horizontal">
 
                     <RadioButton
@@ -66,22 +62,18 @@
                     style="@android:style/Widget.Holo.Light.Spinner"
                     android:layout_width="fill_parent"
                     android:layout_height="@dimen/touchables_min_length"
-                    android:layout_marginBottom="@dimen/vertical_margin_min"
-                    android:layout_marginTop="@dimen/vertical_margin_min"
                     android:text="@string/date_picker_placeholder" />
 
                 <EditText
                     android:id="@+id/etDescription"
                     android:layout_width="fill_parent"
                     android:layout_height="@dimen/touchables_min_length"
-                    android:layout_marginBottom="@dimen/vertical_margin_min"
-                    android:layout_marginTop="@dimen/vertical_margin_min"
                     android:hint="@string/description" />
 
 
             </LinearLayout>
 
-            <LinearLayout
+            <com.linearlistview.LinearListView
                 android:id="@+id/flvCategoryPicker"
                 style="@style/card"
                 android:padding="@dimen/card_padding"
