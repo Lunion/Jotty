@@ -24,6 +24,7 @@
             android:authorities="com.lawenlerk.jotcash.provider" />
 
         <activity
+            android:windowSoftInputMode="adjustPan"
             android:name="com.lawenlerk.jotcash.RecordActivity"
             android:label="@string/add_a_transaction"
             android:parentActivityName="com.lawenlerk.jotcash.MainActivity">

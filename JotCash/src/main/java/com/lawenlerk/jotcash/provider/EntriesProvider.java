@@ -77,9 +77,10 @@ public class EntriesProvider extends ContentProvider {
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
 
+        Log.v(EntriesProvider.class.getName(), "Starting query");
         Cursor cursor = queryBuilder.query(database, projection, selection, selectionArgs, groupBy, null, sortOrder);
+        Log.v(EntriesProvider.class.getName(), "Queried from the database");
         Log.d("EntriesProvider", Integer.toString(cursor.getCount()));
-        Log.v("EntriesProvider", "Queried from the database");
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
 
         return cursor;

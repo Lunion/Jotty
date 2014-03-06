@@ -27,5 +27,6 @@
     <string name="category_prompt">Please enter a category</string>
     <string name="description">Description</string>
     <string name="add">Add</string>
+    <string name="action_delete">Delete</string>
 
 </resources>

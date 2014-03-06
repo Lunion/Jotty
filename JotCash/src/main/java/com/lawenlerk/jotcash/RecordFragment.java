@@ -25,7 +25,6 @@ import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.doomonafireball.betterpickers.calendardatepicker.CalendarDatePickerDialog;
-import com.doomonafireball.betterpickers.numberpicker.NumberPickerBuilder;
 import com.doomonafireball.betterpickers.numberpicker.NumberPickerDialogFragment;
 import com.lawenlerk.jotcash.database.TransactionsTable;
 import com.lawenlerk.jotcash.provider.EntriesProvider;
@@ -241,6 +240,17 @@ public class RecordFragment extends Fragment
         getActivity().finish();
     }
 
+    public void deleteTransaction() {
+        if (transactionUri != null) {
+            // Delete from database
+            getActivity().getContentResolver().delete(transactionUri, null, null);
+            getActivity().finish();
+        } else {
+            // Just discard this transaction and exit
+            getActivity().finish();
+        }
+    }
+
     private void updateTransaction(Transaction transaction) {
         ContentValues contentValues = new ContentValues();
 
@@ -326,8 +336,6 @@ public class RecordFragment extends Fragment
         NumberPickerDialogFragment numberPickerDialogFragment = NumberPickerDialogFragment.newInstance(0, R.style.BetterPickersDialogFragment_Light, null, null, View.INVISIBLE, View.VISIBLE, "SGD");// TODO let user select currency string from settings
         numberPickerDialogFragment.setTargetFragment(this, 0);
         numberPickerDialogFragment.show(fragmentManager, "numberPickerDialogFragment");
-
-
 
 
     }
