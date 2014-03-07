@@ -81,7 +81,7 @@
 
             </LinearLayout>
 
-            <LinearLayout
+            <com.lawenlerk.jotcash.LinearListView
                 android:id="@+id/flvCategoryPicker"
                 style="@style/card"
                 android:padding="@dimen/card_padding"
@@ -109,7 +109,8 @@
             android:background="@android:color/white"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/touchables_min_length"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:capitalize="sentences" />
 
         <ImageButton
             android:id="@+id/ibCategoryAdd"
