@@ -16,11 +16,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
@@ -59,6 +57,8 @@ public class RecordFragment extends Fragment
     ImageButton ibCategoryAdd;
     SimpleCursorAdapter expenseAdapter;
     SimpleCursorAdapter incomeAdapter;
+    Boolean expenseAdapterSwapped = false;
+    Boolean incomeAdapterSwapped = false;
     private Uri transactionUri = null;
 
 
@@ -133,7 +133,7 @@ public class RecordFragment extends Fragment
 
             flvCategoryPicker.setOnItemClickListener(new LinearListView.OnItemClickListener() {
                 @Override
-                public void onItemClick(LinearListView linearListView , View view, int position, long id) {
+                public void onItemClick(LinearListView linearListView, View view, int position, long id) {
                     Log.d("RecordFragment", Long.toString(id));
                     Cursor cursor;
                     if (transaction.type.equals(Transaction.EXPENSE)) {
@@ -367,16 +367,24 @@ public class RecordFragment extends Fragment
 
     public void setType(String type) {
         transaction.type = type;
+        updateCategoryPicker();
         if (type.equals(Transaction.EXPENSE)) {
-            flvCategoryPicker.setAdapter(expenseAdapter);
             if (!rbExpense.isChecked()) {
                 rbExpense.setChecked(true);
             }
         } else {
-            flvCategoryPicker.setAdapter(incomeAdapter);
             if (!rbIncome.isChecked()) {
                 rbIncome.setChecked(true);
             }
+        }
+    }
+
+    public void updateCategoryPicker() {
+        // Workaround to solve issue of nullpointerexception if setAdapter before cursor is fully swapped and parsed
+        if (expenseAdapterSwapped && transaction.type.equals(Transaction.EXPENSE)) {
+            flvCategoryPicker.setAdapter(expenseAdapter);
+        } else if (incomeAdapterSwapped && transaction.type.equals(Transaction.INCOME)) {
+            flvCategoryPicker.setAdapter(incomeAdapter);
         }
     }
 
@@ -502,9 +510,13 @@ public class RecordFragment extends Fragment
         switch (loader.getId()) {
             case EXPENSE:
                 expenseAdapter.swapCursor(data);
+                expenseAdapterSwapped = true;
+                updateCategoryPicker();
                 break;
             case INCOME:
                 incomeAdapter.swapCursor(data);
+                incomeAdapterSwapped = true;
+                updateCategoryPicker();
                 break;
         }
     }
