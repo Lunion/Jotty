@@ -79,7 +79,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/flvCategoryPicker"
+                android:id="@+id/llvCategoryPicker"
                 style="@style/card"
                 android:padding="@dimen/card_padding"
                 android:minHeight="@dimen/touchables_min_length"

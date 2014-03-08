@@ -13,13 +13,16 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.doomonafireball.betterpickers.calendardatepicker.CalendarDatePickerDialog;
@@ -52,7 +55,7 @@ public class RecordFragment extends Fragment
     RadioButton rbIncome;
     Button btDatePicker;
     EditText etDescription;
-    LinearListView flvCategoryPicker;
+    LinearListView llvCategoryPicker;
     EditText etCategorySearch;
     ImageButton ibCategoryAdd;
     SimpleCursorAdapter expenseAdapter;
@@ -126,12 +129,11 @@ public class RecordFragment extends Fragment
             // Set up description
             etDescription = (EditText) view.findViewById(R.id.etDescription);
 
-
             // Set up category list
-            flvCategoryPicker = (LinearListView) view.findViewById(R.id.flvCategoryPicker);
+            llvCategoryPicker = (LinearListView) view.findViewById(R.id.llvCategoryPicker);
             loadCategories();
 
-            flvCategoryPicker.setOnItemClickListener(new LinearListView.OnItemClickListener() {
+            llvCategoryPicker.setOnItemClickListener(new LinearListView.OnItemClickListener() {
                 @Override
                 public void onItemClick(LinearListView linearListView, View view, int position, long id) {
                     Log.d("RecordFragment", Long.toString(id));
@@ -151,18 +153,22 @@ public class RecordFragment extends Fragment
 
             // Set up category etCategorySearch
             etCategorySearch = (EditText) view.findViewById(R.id.etCategorySearch);
+            etCategorySearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                    if (i == EditorInfo.IME_ACTION_DONE || keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                        attemptSaveTransaction();
+                    }
+                    return false;
+                }
+            });
 
             // Set up category image button
             ibCategoryAdd = (ImageButton) view.findViewById(R.id.ibCategoryAdd);
             ibCategoryAdd.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (etCategorySearch.getText().toString().isEmpty()) {
-                        Toast.makeText(getActivity(), getString(R.string.category_prompt), Toast.LENGTH_SHORT).show();
-                    } else {
-                        transaction.category = etCategorySearch.getText().toString();
-                        saveTransaction(transaction);
-                    }
+                    attemptSaveTransaction();
                 }
             });
 
@@ -223,6 +229,15 @@ public class RecordFragment extends Fragment
 
 
         return view;
+    }
+
+    private void attemptSaveTransaction() {
+        if (etCategorySearch.getText().toString().isEmpty()) {
+            Toast.makeText(getActivity(), getString(R.string.category_prompt), Toast.LENGTH_SHORT).show();
+        } else {
+            transaction.category = etCategorySearch.getText().toString();
+            saveTransaction(transaction);
+        }
     }
 
     private void launchCalendarDatePicker() {
@@ -315,6 +330,7 @@ public class RecordFragment extends Fragment
 
     private void setCategory(String category) {
         transaction.category = category;
+        etCategorySearch.setText(transaction.category);
     }
 
     private void loadCategories() {
@@ -386,9 +402,9 @@ public class RecordFragment extends Fragment
     public void updateCategoryPicker() {
         // Workaround to solve issue of nullpointerexception if setAdapter before cursor is fully swapped and parsed
         if (expenseAdapterSwapped && transaction.type.equals(Transaction.EXPENSE)) {
-            flvCategoryPicker.setAdapter(expenseAdapter);
+            llvCategoryPicker.setAdapter(expenseAdapter);
         } else if (incomeAdapterSwapped && transaction.type.equals(Transaction.INCOME)) {
-            flvCategoryPicker.setAdapter(incomeAdapter);
+            llvCategoryPicker.setAdapter(incomeAdapter);
         }
     }
 
@@ -490,10 +506,12 @@ public class RecordFragment extends Fragment
         String[] projection = {
                 TransactionsTable.CATEGORY + " AS _id",
                 TransactionsTable.CATEGORY,
+                TransactionsTable.TYPE,
+                TransactionsTable.TIME_CREATED
         };
         String selection;
         String[] selectionArgs;
-        String sortOrder = "MAX(" + TransactionsTable.TIME_CREATED + ") DESC";
+        String sortOrder = TransactionsTable.TIME_CREATED + " DESC";
 
         switch (id) {
             case EXPENSE:

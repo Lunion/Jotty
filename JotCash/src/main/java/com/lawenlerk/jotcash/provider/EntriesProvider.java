@@ -51,7 +51,7 @@ public class EntriesProvider extends ContentProvider {
                 getContext(),   // the application context
                 DBNAME,         // the name of the database
                 null,           // uses the default SQLite cursor
-                4               // the version number
+                5               // the version number
         );
         return true;
     }
@@ -61,7 +61,6 @@ public class EntriesProvider extends ContentProvider {
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         SQLiteDatabase database = entriesDatabaseHelper.getReadableDatabase();
 
-        String groupBy = null;
         switch (sUriMatcher.match(uri)) {
             case TRANSACTIONS:
                 queryBuilder.setTables(TransactionsTable.TABLE_NAME);
@@ -80,17 +79,25 @@ public class EntriesProvider extends ContentProvider {
                     }
                 }
 
+                String groupBy = TransactionsTable.CATEGORY + ", " + TransactionsTable.TYPE;
+
                 String unionQuery = "SELECT " + projectionString + " FROM " + TransactionsTable.TABLE_NAME +
+                        " WHERE " + selection +
                         " UNION " + "SELECT " + projectionString + " FROM " + CustomCategoriesTable.TABLE_NAME +
                         " WHERE " + selection;
 
-                Log.d(EntriesProvider.class.getName(), "Built union query");
-                Cursor cursor = database.rawQuery(unionQuery, selectionArgs);
+                String distinctUnionQuery = "SELECT * FROM (" + unionQuery + ") GROUP BY " + groupBy + " ORDER BY " + sortOrder;
+
+                String[] doubleSelectionArgs = new String[selectionArgs.length * 2];
+                for (int i = 0; i < doubleSelectionArgs.length; i++) {
+                    int j = (i < selectionArgs.length) ? i : i - selectionArgs.length;
+                    doubleSelectionArgs[i] = selectionArgs[j];
+                }
+
+                Cursor cursor = database.rawQuery(distinctUnionQuery, doubleSelectionArgs);
                 cursor.setNotificationUri(getContext().getContentResolver(), uri);
                 return cursor;
 
-
-//                groupBy = TransactionsTable.CATEGORY + ", " + TransactionsTable.TYPE;
 
 //                break;
             default:
@@ -98,7 +105,7 @@ public class EntriesProvider extends ContentProvider {
         }
 
         Log.v(EntriesProvider.class.getName(), "Starting query");
-        Cursor cursor = queryBuilder.query(database, projection, selection, selectionArgs, groupBy, null, sortOrder);
+        Cursor cursor = queryBuilder.query(database, projection, selection, selectionArgs, null, null, sortOrder);
         Log.v(EntriesProvider.class.getName(), "Queried from the database");
         Log.d("EntriesProvider", Integer.toString(cursor.getCount()));
         cursor.setNotificationUri(getContext().getContentResolver(), uri);

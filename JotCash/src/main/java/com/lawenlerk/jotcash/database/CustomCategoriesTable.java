@@ -15,6 +15,7 @@ public class CustomCategoriesTable {
     public static final String ITEM_NAME = "custom_category";
 
     public static final String ID = "_id";
+    public static final String TIME_CREATED = "time_created";
     public static final String TYPE = "type";
     public static final String CATEGORY = "category";
 
@@ -22,6 +23,7 @@ public class CustomCategoriesTable {
     private static final String SQL_CREATE_TABLE = "CREATE TABLE " +
             TABLE_NAME + " (" +
             ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            TIME_CREATED + " TEXT, " +
             TYPE + " TEXT NOT NULL, " +
             CATEGORY + " TEXT NOT NULL);";
 
