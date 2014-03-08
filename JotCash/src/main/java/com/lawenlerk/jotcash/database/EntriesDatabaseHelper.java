@@ -16,10 +16,12 @@ public class EntriesDatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase database) {
         TransactionsTable.onCreate(database);
+        CustomCategoriesTable.onCreate(database);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
         TransactionsTable.onUpgrade(database, oldVersion, newVersion);
+        CustomCategoriesTable.onUpgrade(database, oldVersion, newVersion);
     }
 }

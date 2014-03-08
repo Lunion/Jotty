@@ -172,8 +172,12 @@ public class RecordFragment extends Fragment
                 // This is not a recreation, check if anything was passed in
                 Bundle extras = getActivity().getIntent().getExtras();
                 if (extras != null) {
+                    // This is an existing transaction
                     transactionUri = extras.getParcelable(EntriesProvider.CONTENT_ITEM_TYPE);
                     loadTransaction(transactionUri);
+
+                    getActivity().setTitle(getString(R.string.edit_transaction));
+
                 }
             } else {
                 // This is a recreation, might be new or existing transaction
@@ -484,8 +488,8 @@ public class RecordFragment extends Fragment
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String[] projection = {
-                TransactionsTable.ID + " AS _id",
-                TransactionsTable.CATEGORY, // for convenience
+                TransactionsTable.CATEGORY + " AS _id",
+                TransactionsTable.CATEGORY,
         };
         String selection;
         String[] selectionArgs;

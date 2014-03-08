@@ -17,7 +17,7 @@
     <string name="action_add_transaction">Add Transaction</string>
     <string name="title_activity_record">RecordActivity</string>
     <string name="overview">Overview</string>
-    <string name="add_a_transaction">Add a transaction</string>
+    <string name="add_a_transaction">Add Transaction</string>
     <string name="database_date_format">yyyy-MM-dd</string>
     <string name="database_date_time_format">yyyy-MM-dd HH:mm:ss.SSS</string>
     <string name="title_activity_test">Test</string>
@@ -28,5 +28,6 @@
     <string name="description">Description</string>
     <string name="add">Add</string>
     <string name="action_delete">Delete</string>
+    <string name="edit_transaction">Edit Transaction</string>
 
 </resources>

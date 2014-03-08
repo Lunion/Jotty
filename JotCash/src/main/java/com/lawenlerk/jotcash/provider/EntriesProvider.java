@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.lawenlerk.jotcash.database.CustomCategoriesTable;
 import com.lawenlerk.jotcash.database.EntriesDatabaseHelper;
 import com.lawenlerk.jotcash.database.TransactionsTable;
 
@@ -50,7 +51,7 @@ public class EntriesProvider extends ContentProvider {
                 getContext(),   // the application context
                 DBNAME,         // the name of the database
                 null,           // uses the default SQLite cursor
-                3               // the version number
+                4               // the version number
         );
         return true;
     }
@@ -70,10 +71,28 @@ public class EntriesProvider extends ContentProvider {
                 queryBuilder.appendWhere(TransactionsTable.ID + "=" + uri.getLastPathSegment());
                 break;
             case CATEGORIES:
-                // TODO Provide a list of default example categories for user to choose
-                queryBuilder.setTables(TransactionsTable.TABLE_NAME);
-                groupBy = TransactionsTable.CATEGORY + ", " + TransactionsTable.TYPE;
-                break;
+                // Join user added categories from transactions with custom categories
+                String projectionString = "";
+                for (int i = 0; i < projection.length; i++) {
+                    projectionString += projection[i];
+                    if (i < projection.length - 1) {
+                        projectionString += ", ";
+                    }
+                }
+
+                String unionQuery = "SELECT " + projectionString + " FROM " + TransactionsTable.TABLE_NAME +
+                        " UNION " + "SELECT " + projectionString + " FROM " + CustomCategoriesTable.TABLE_NAME +
+                        " WHERE " + selection;
+
+                Log.d(EntriesProvider.class.getName(), "Built union query");
+                Cursor cursor = database.rawQuery(unionQuery, selectionArgs);
+                cursor.setNotificationUri(getContext().getContentResolver(), uri);
+                return cursor;
+
+
+//                groupBy = TransactionsTable.CATEGORY + ", " + TransactionsTable.TYPE;
+
+//                break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
