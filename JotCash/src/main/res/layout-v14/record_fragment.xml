@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/llTransactionDetails"
                 style="@style/card"
                 android:layout_width="fill_parent"
@@ -31,6 +31,7 @@
                     style="@android:style/Widget.Holo.Light.EditText"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
                     android:focusable="false"
                     android:gravity="right"
                     android:hint="@string/amount"
@@ -41,6 +42,7 @@
                     android:id="@+id/rgType"
                     android:layout_width="fill_parent"
                     android:layout_height="@dimen/touchables_min_length"
+                    android:layout_below="@+id/etAmount"
                     android:orientation="horizontal">
 
                     <RadioButton
@@ -64,17 +66,19 @@
                     style="@android:style/Widget.Holo.Light.Spinner"
                     android:layout_width="fill_parent"
                     android:layout_height="@dimen/touchables_min_length"
+                    android:layout_below="@+id/rgType"
                     android:text="@string/date_picker_placeholder" />
 
                 <EditText
                     android:id="@+id/etDescription"
                     android:layout_width="fill_parent"
                     android:layout_height="@dimen/touchables_min_length"
+                    android:layout_below="@id/btDatePicker"
                     android:capitalize="sentences"
                     android:hint="@string/description" />
 
 
-            </LinearLayout>
+            </RelativeLayout>
 
             <com.linearlistview.LinearListView
                 android:id="@+id/llvCategoryPicker"
@@ -114,11 +118,11 @@
             android:layout_height="fill_parent"
             android:layout_alignRight="@+id/etCategorySearch"
             android:layout_centerVertical="true"
-            android:background="@drawable/imagebutton_highlight"
+            android:background="@drawable/button_highlight"
             android:contentDescription="@string/add"
-            android:src="@drawable/ic_action_send_now"
             android:cropToPadding="false"
-            android:scaleType="fitXY" />
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_action_send_now" />
 
     </RelativeLayout>
 

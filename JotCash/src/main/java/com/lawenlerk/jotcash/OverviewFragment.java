@@ -1,6 +1,7 @@
 package com.lawenlerk.jotcash;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.SimpleCursorTreeAdapter;
 
 import com.lawenlerk.jotcash.database.TransactionsTable;
 import com.lawenlerk.jotcash.provider.EntriesProvider;
@@ -24,10 +26,6 @@ import com.lawenlerk.jotcash.provider.EntriesProvider;
  * Created by enlerklaw on 2/24/14.
  */
 public class OverviewFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
-    View view;
-    ListView lvTransactions;
-    SimpleCursorAdapter mAdapter;
-
     private static final String[] PROJECTION = new String[]{
             TransactionsTable.ID,
             TransactionsTable.AMOUNT
@@ -35,6 +33,9 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
     private static final String SELECTION = null;
     private static final String[] SELECTIONARGS = null;
     private static final String SORTORDER = "date(" + TransactionsTable.DATE + ") DESC" + ", " + "datetime(" + TransactionsTable.TIME_CREATED + ") DESC";
+    View view;
+    ListView lvTransactions;
+    SimpleCursorAdapter mAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -82,6 +83,17 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mAdapter.swapCursor(null);
+    }
+
+    public class DayExpandableListAdapter extends SimpleCursorTreeAdapter {
+        public DayExpandableListAdapter(Context context, Cursor cursor, int groupLayout, String[] groupFrom, int[] groupTo, int childLayout, String[] childFrom, int[] childTo) {
+            super(context, cursor, groupLayout, groupFrom, groupTo, childLayout, childFrom, childTo);
+        }
+
+        @Override
+        protected Cursor getChildrenCursor(Cursor cursor) {
+            return null;
+        }
     }
 
 }

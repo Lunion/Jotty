@@ -81,12 +81,12 @@
             <LinearLayout
                 android:id="@+id/llvCategoryPicker"
                 style="@style/card"
-                android:padding="@dimen/card_padding"
-                android:minHeight="@dimen/touchables_min_length"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="52dp"
-                android:orientation="vertical" />
+                android:minHeight="@dimen/touchables_min_length"
+                android:orientation="vertical"
+                android:padding="@dimen/card_padding" />
         </LinearLayout>
     </ScrollView>
 
@@ -95,15 +95,15 @@
         style="@style/card"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/touchables_min_length"
-        android:layout_marginBottom="@dimen/card_padding"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/card_padding">
 
         <EditText
             android:id="@+id/etCategorySearch"
             android:layout_width="fill_parent"
             android:layout_height="@dimen/touchables_min_length"
-            android:hint="@string/choose_category"
             android:background="@android:color/white"
+            android:hint="@string/choose_category"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/touchables_min_length"
             android:singleLine="true" />
@@ -114,7 +114,7 @@
             android:layout_height="fill_parent"
             android:layout_alignRight="@+id/etCategorySearch"
             android:layout_centerVertical="true"
-            android:background="@drawable/imagebutton_highlight"
+            android:background="@drawable/button_highlight"
             android:contentDescription="@string/add"
             android:src="@drawable/ic_action_send_now" />
 

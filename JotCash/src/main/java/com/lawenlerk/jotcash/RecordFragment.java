@@ -45,8 +45,8 @@ public class RecordFragment extends Fragment
         NumberPickerDialogFragment.NumberPickerDialogHandler,
         LoaderManager.LoaderCallbacks<Cursor> {
     // Constants for loader use
-    private static final int EXPENSE = 1;
-    private static final int INCOME = 2;
+    private static final int EXPENSE_LOADER = 1;
+    private static final int INCOME_LOADER = 2;
     Transaction transaction = new Transaction();
 
     View view;
@@ -252,6 +252,7 @@ public class RecordFragment extends Fragment
     }
 
     private void saveTransaction(Transaction transaction) {
+        transaction.description = etDescription.getText().toString();
         if (transactionUri == null) {
             insertTransaction(transaction);
         } else {
@@ -335,11 +336,11 @@ public class RecordFragment extends Fragment
 
     private void loadCategories() {
         String[] fromColumns = {TransactionsTable.CATEGORY};
-        int[] toViews = {android.R.id.text1};
-        expenseAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, fromColumns, toViews, 0);
-        incomeAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1, null, fromColumns, toViews, 0);
-        getLoaderManager().initLoader(EXPENSE, null, this);
-        getLoaderManager().initLoader(INCOME, null, this);
+        int[] toViews = {R.id.tvCategoryName};
+        expenseAdapter = new SimpleCursorAdapter(getActivity(), R.layout.category_row, null, fromColumns, toViews, 0);
+        incomeAdapter = new SimpleCursorAdapter(getActivity(), R.layout.category_row, null, fromColumns, toViews, 0);
+        getLoaderManager().initLoader(EXPENSE_LOADER, null, this);
+        getLoaderManager().initLoader(INCOME_LOADER, null, this);
     }
 
     private void launchNumberPicker() {
@@ -514,11 +515,11 @@ public class RecordFragment extends Fragment
         String sortOrder = TransactionsTable.TIME_CREATED + " DESC";
 
         switch (id) {
-            case EXPENSE:
+            case EXPENSE_LOADER:
                 selection = TransactionsTable.TYPE + "=?";
                 selectionArgs = new String[]{Transaction.EXPENSE};
                 return new CursorLoader(getActivity(), EntriesProvider.CATEGORIES_URI, projection, selection, selectionArgs, sortOrder);
-            case INCOME:
+            case INCOME_LOADER:
                 selection = TransactionsTable.TYPE + "=?";
                 selectionArgs = new String[]{Transaction.INCOME};
                 return new CursorLoader(getActivity(), EntriesProvider.CATEGORIES_URI, projection, selection, selectionArgs, sortOrder);
@@ -530,12 +531,12 @@ public class RecordFragment extends Fragment
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         switch (loader.getId()) {
-            case EXPENSE:
+            case EXPENSE_LOADER:
                 expenseAdapter.swapCursor(data);
                 expenseAdapterSwapped = true;
                 updateCategoryPicker();
                 break;
-            case INCOME:
+            case INCOME_LOADER:
                 incomeAdapter.swapCursor(data);
                 incomeAdapterSwapped = true;
                 updateCategoryPicker();
@@ -546,10 +547,10 @@ public class RecordFragment extends Fragment
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         switch (loader.getId()) {
-            case EXPENSE:
+            case EXPENSE_LOADER:
                 expenseAdapter.swapCursor(null);
                 break;
-            case INCOME:
+            case INCOME_LOADER:
                 incomeAdapter.swapCursor(null);
                 break;
         }
