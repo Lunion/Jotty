@@ -19,31 +19,30 @@ import com.lawenlerk.jotcash.database.TransactionsTable;
  * Created by enlerklaw on 2/25/14.
  */
 public class EntriesProvider extends ContentProvider {
-    // database
-    private EntriesDatabaseHelper entriesDatabaseHelper;
-
+    public static final String DAY_TOTAL = "day_total";
+    public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + TransactionsTable.TABLE_NAME;
+    public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + TransactionsTable.ITEM_NAME;
     private static final String DBNAME = "entries";
-
     // Integer codes/constants for UriMatcher
     private static final int TRANSACTIONS = 1;
     private static final int TRANSACTION_ID = 2;
     private static final int CATEGORIES = 3;
-
+    private static final int DAYS = 4;
     private static final String AUTHORITY = "com.lawenlerk.jotcash.provider";
-
+    public static final Uri TRANSACTIONS_URI = Uri.parse("content://" + AUTHORITY + "/" + TransactionsTable.TABLE_NAME);
+    public static final Uri CATEGORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + "categories");  // For convenience to utilise groupby
+    public static final Uri DAYS_URI = Uri.parse("content://" + AUTHORITY + "/" + "days"); // For convenience to utilise groupby
     private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
         sUriMatcher.addURI(AUTHORITY, TransactionsTable.TABLE_NAME, TRANSACTIONS);
         sUriMatcher.addURI(AUTHORITY, TransactionsTable.TABLE_NAME + "/#", TRANSACTION_ID);
         sUriMatcher.addURI(AUTHORITY, "categories", CATEGORIES);
+        sUriMatcher.addURI(AUTHORITY, "days", DAYS);
     }
 
-    public static final Uri TRANSACTIONS_URI = Uri.parse("content://" + AUTHORITY + "/" + TransactionsTable.TABLE_NAME);
-    public static final Uri CATEGORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + "categories");  // For convenience to utilise groupby
-
-    public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + TransactionsTable.TABLE_NAME;
-    public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + TransactionsTable.ITEM_NAME;
+    // database
+    private EntriesDatabaseHelper entriesDatabaseHelper;
 
     @Override
     public boolean onCreate() {
@@ -61,6 +60,7 @@ public class EntriesProvider extends ContentProvider {
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         SQLiteDatabase database = entriesDatabaseHelper.getReadableDatabase();
 
+        String groupBy = null;
         switch (sUriMatcher.match(uri)) {
             case TRANSACTIONS:
                 queryBuilder.setTables(TransactionsTable.TABLE_NAME);
@@ -79,7 +79,7 @@ public class EntriesProvider extends ContentProvider {
                     }
                 }
 
-                String groupBy = TransactionsTable.CATEGORY + ", " + TransactionsTable.TYPE;
+                groupBy = TransactionsTable.CATEGORY + ", " + TransactionsTable.TYPE;
 
                 String unionQuery = "SELECT " + projectionString + " FROM " + TransactionsTable.TABLE_NAME +
                         " WHERE " + selection +
@@ -98,14 +98,16 @@ public class EntriesProvider extends ContentProvider {
                 cursor.setNotificationUri(getContext().getContentResolver(), uri);
                 return cursor;
 
-
-//                break;
+            case DAYS:
+                queryBuilder.setTables(TransactionsTable.TABLE_NAME);
+                groupBy = TransactionsTable.DATE;
+                break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
 
         Log.v(EntriesProvider.class.getName(), "Starting query");
-        Cursor cursor = queryBuilder.query(database, projection, selection, selectionArgs, null, null, sortOrder);
+        Cursor cursor = queryBuilder.query(database, projection, selection, selectionArgs, groupBy, null, sortOrder);
         Log.v(EntriesProvider.class.getName(), "Queried from the database");
         Log.d("EntriesProvider", Integer.toString(cursor.getCount()));
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
