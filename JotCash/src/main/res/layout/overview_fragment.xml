@@ -10,8 +10,10 @@
         android:id="@+id/overviewFragment_elvDays"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:layout_marginBottom="@dimen/card_margin"
         android:layout_marginLeft="@dimen/card_margin"
         android:layout_marginRight="@dimen/card_margin"
-        android:layout_marginTop="@dimen/card_margin" />
+        android:groupIndicator="@android:color/transparent"
+        android:scrollbars="none" />
 
 </LinearLayout>

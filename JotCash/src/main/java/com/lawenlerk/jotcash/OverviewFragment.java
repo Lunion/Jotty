@@ -1,13 +1,18 @@
+// TODO Update groupCursors after data has changed
+// TODO expand first group automatically
 package com.lawenlerk.jotcash;
 
 
 import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,7 +54,6 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
 
         // TODO use ListViewAnimations with ExpandableListView to group days
 
-
         String[] groupFrom = {
                 TransactionsTable.DATE,
                 EntriesProvider.DAY_TOTAL
@@ -73,6 +77,7 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
         mAdapter = new ExpandableListCursorAdapter(getActivity(), null, R.layout.day_expandedgroup, R.layout.day_collapsedgroup, groupFrom, groupTo, R.layout.day_child, R.layout.day_lastchild, childFrom, childTo);
 
         elvDays.setAdapter(mAdapter);
+        mAdapter.notifyDataSetChanged();
 /*        elvDays.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
             @Override
             public void onGroupCollapse(int i) {
@@ -80,10 +85,20 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
                 getLoaderManager().destroyLoader(i);
             }
         });*/
+        elvDays.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+                Log.d("OverviewFragment", Long.toString(id));
+                Intent intent = new Intent(getActivity(), RecordActivity.class);
+                Uri transactionUri = Uri.parse(EntriesProvider.TRANSACTIONS_URI + "/" + id);
+                intent.putExtra(EntriesProvider.CONTENT_ITEM_TYPE, transactionUri);
+                startActivity(intent);
+                return false;
+            }
+        });
 
         // Query for days and sum of amounts
         getLoaderManager().initLoader(DAYS_LOADER, null, this);
-
 
         return view;
     }
@@ -143,10 +158,9 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
             case DAYS_LOADER:
                 mAdapter.setGroupCursor(data);
                 mAdapter.notifyDataSetChanged();
+//                elvDays.expandGroup(0);
                 break;
             default:
-                // Group position was passed in as loader id
-                // If mAdapter already has a cursor attached to this group position, don't set again to prevent destroying previous cursor and spawn an infinite loop
                 mAdapter.setChildrenCursor(loader.getId(), data);
                 mAdapter.notifyDataSetChanged();
                 break;
@@ -161,17 +175,13 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
                 break;
             default:
                 mAdapter.setChildrenCursor(loader.getId(), null);
+                break;
         }
     }
 
     private void startLoader(int id, Bundle args) {
         getLoaderManager().initLoader(id, args, this);
     }
-
-    private void restartLoader(int id, Bundle args) {
-        getLoaderManager().restartLoader(id, args, this);
-    }
-
 
     public class ExpandableListCursorAdapter extends BaseExpandableListAdapter {
         public LayoutInflater inflater;
@@ -315,13 +325,11 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
 
         @Override
         public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                // No existing view, inflate a new one
-                if (isExpanded && mHasExpandedGroupLayout) {
-                    convertView = inflater.inflate(mExpandedGroupLayout, null);
-                } else {
-                    convertView = inflater.inflate(mCollapsedGroupLayout, null);
-                }
+            // Don't reuse views as we want to change the layout as group expands and closes
+            if (isExpanded && mHasExpandedGroupLayout) {
+                convertView = inflater.inflate(mExpandedGroupLayout, null);
+            } else {
+                convertView = inflater.inflate(mCollapsedGroupLayout, null);
             }
             // Get the current group cursor with cursor set to groupPosition
             Cursor groupCursor = getGroup(groupPosition);
@@ -331,12 +339,12 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
                 textView.setText(groupCursor.getString(mGroupFrom[i]));
             }
 
+
             return convertView;
         }
 
         @Override
         public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-
             // Don't reuse rows to avoid problems arising from dynamic data lastChild
             if (isLastChild && mHasLastChildLayout) {
                 convertView = inflater.inflate(mLastChildLayout, null);
@@ -356,7 +364,7 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
 
         @Override
         public boolean isChildSelectable(int groupPosition, int childPosition) {
-            return false;
+            return true;
         }
     }
 

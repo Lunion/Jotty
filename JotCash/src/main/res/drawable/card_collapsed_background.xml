@@ -13,9 +13,18 @@
         <shape
             android:dither="true"
             android:shape="rectangle">
-            <corners
-                android:topLeftRadius="2dp"
-                android:topRightRadius="2dp" />
+            <corners android:radius="2dp" />
+            <solid android:color="#ccc" />
+        </shape>
+    </item>
+
+    <item
+        android:bottom="2dp"
+        android:top="@dimen/card_margin">
+        <shape
+            android:dither="true"
+            android:shape="rectangle">
+            <corners android:radius="2dp" />
             <solid android:color="@android:color/white" />
         </shape>
     </item>
