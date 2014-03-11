@@ -1,4 +1,3 @@
-// TODO Update groupCursors after data has changed
 // TODO expand first group automatically
 package com.lawenlerk.jotcash;
 
@@ -34,7 +33,7 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
     private static final String SELECTION = null;
     private static final String[] SELECTIONARGS = null;
     private static final String SORTORDER = "date(" + TransactionsTable.DATE + ") DESC" + ", " + "datetime(" + TransactionsTable.TIME_CREATED + ") DESC";
-    private static final int DAYS_LOADER = -99; // Arbitrarily picked integer to avoid clash with group positions
+    private static final int GROUP_CURSOR_LOADER = -99; // Arbitrarily picked integer to avoid clash with group positions
     View view;
     //    ListView lvTransactions;
     ExpandableListView elvDays;
@@ -89,7 +88,7 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
         });
 
         // Query for days and sum of amounts
-        getLoaderManager().initLoader(DAYS_LOADER, null, this);
+        getLoaderManager().initLoader(GROUP_CURSOR_LOADER, null, this);
 
         return view;
     }
@@ -108,7 +107,7 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
         String sortOrder;
 
         switch (id) {
-            case DAYS_LOADER:
+            case GROUP_CURSOR_LOADER:
                 projection = new String[]{
                         TransactionsTable.DATE + " AS _id",
                         TransactionsTable.DATE,
@@ -146,8 +145,9 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         switch (loader.getId()) {
-            case DAYS_LOADER:
+            case GROUP_CURSOR_LOADER:
                 mAdapter.setGroupCursor(data);
+//                elvDays.expandGroup(1);
                 break;
             default:
                 mAdapter.setChildrenCursor(loader.getId(), data);
@@ -158,7 +158,7 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         switch (loader.getId()) {
-            case DAYS_LOADER:
+            case GROUP_CURSOR_LOADER:
                 mAdapter.setGroupCursor(null);
                 break;
             default:
@@ -215,8 +215,8 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
 
         public void requery() {
             // Obtain all cursors again
-            overviewFragment.getLoaderManager().destroyLoader(DAYS_LOADER);
-            overviewFragment.getLoaderManager().initLoader(DAYS_LOADER, null, overviewFragment);
+            overviewFragment.getLoaderManager().destroyLoader(GROUP_CURSOR_LOADER);
+            overviewFragment.getLoaderManager().initLoader(GROUP_CURSOR_LOADER, null, overviewFragment);
         }
 
         private int[] findColumns(Cursor cursor, String[] fromNames) {
@@ -292,7 +292,7 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
 
         @Override
         public Cursor getGroup(int groupPosition) {
-            Cursor cursor = mGroupCursor;
+            Cursor cursor = getGroupCursor();
             cursor.moveToPosition(groupPosition);
             return cursor;
         }
@@ -306,13 +306,14 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
 
         @Override
         public long getGroupId(int groupPosition) {
-            return mGroupCursor.getLong(mGroupCursor.getColumnIndexOrThrow("_id"));
+            Cursor groupCursor = getGroup(groupPosition);
+            return groupCursor.getLong(groupCursor.getColumnIndexOrThrow("_id"));
         }
 
         @Override
         public long getChildId(int groupPosition, int childPosition) {
-            Cursor cursor = getChild(groupPosition, childPosition);
-            return cursor.getLong(cursor.getColumnIndexOrThrow("_id"));
+            Cursor childCursor = getChild(groupPosition, childPosition);
+            return childCursor.getLong(childCursor.getColumnIndexOrThrow("_id"));
         }
 
         @Override
