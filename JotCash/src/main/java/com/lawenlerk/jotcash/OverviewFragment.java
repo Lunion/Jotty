@@ -1,4 +1,4 @@
-// TODO expand first group automatically
+// TODO Handle configuration changes. Currently, switching orientation Portrait -> Landscape -> Portrait results in crash. Possible disconnected activity. Debug to find out more
 package com.lawenlerk.jotcash;
 
 
@@ -87,6 +87,7 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
             }
         });
 
+
         // Query for days and sum of amounts
         getLoaderManager().initLoader(GROUP_CURSOR_LOADER, null, this);
 
@@ -146,10 +147,14 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         switch (loader.getId()) {
             case GROUP_CURSOR_LOADER:
+                // Handle processing/translation of cursor data here
+                // e.g. converting date string and currency into user format
                 mAdapter.setGroupCursor(data);
-//                elvDays.expandGroup(1);
+                elvDays.expandGroup(0);
                 break;
             default:
+                // Handle processing/translation of cursor data here
+                // e.g. converting date string and currency into user format
                 mAdapter.setChildrenCursor(loader.getId(), data);
                 break;
         }
@@ -172,11 +177,13 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
         super.onResume();
         Log.d(OverviewFragment.class.getSimpleName(), "mAdapter.requery()");
         mAdapter.requery();
+        // Reconnect the fragment
+        mAdapter.setOverviewFragment(this);
     }
 
     public class ExpandableListCursorAdapter extends BaseExpandableListAdapter {
-        public LayoutInflater inflater;
-        public OverviewFragment overviewFragment;
+        private LayoutInflater inflater;
+        private OverviewFragment overviewFragment;
         private Cursor mGroupCursor;
         private SparseArray<Cursor> mCursorSparseArray = new SparseArray<Cursor>();
         private int mExpandedGroupLayout;
@@ -209,8 +216,12 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
             mHasExpandedGroupLayout = true;
             mHasLastChildLayout = true;
 
+            setOverviewFragment(overviewFragment);
+        }
 
-            inflater = overviewFragment.getActivity().getLayoutInflater();
+        public void setOverviewFragment(OverviewFragment overviewFragment) {
+            this.overviewFragment = overviewFragment;
+            this.inflater = overviewFragment.getActivity().getLayoutInflater();
         }
 
         public void requery() {
