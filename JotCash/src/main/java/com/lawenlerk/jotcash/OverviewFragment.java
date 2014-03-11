@@ -3,7 +3,6 @@
 package com.lawenlerk.jotcash;
 
 
-import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -74,17 +73,9 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
                 R.id.dayChild_tvAmount
         };
 
-        mAdapter = new ExpandableListCursorAdapter(getActivity(), null, R.layout.day_expandedgroup, R.layout.day_collapsedgroup, groupFrom, groupTo, R.layout.day_child, R.layout.day_lastchild, childFrom, childTo);
+        mAdapter = new ExpandableListCursorAdapter(this, null, R.layout.day_expandedgroup, R.layout.day_collapsedgroup, groupFrom, groupTo, R.layout.day_child, R.layout.day_lastchild, childFrom, childTo);
 
         elvDays.setAdapter(mAdapter);
-        mAdapter.notifyDataSetChanged();
-/*        elvDays.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
-            @Override
-            public void onGroupCollapse(int i) {
-                Log.d(OverviewFragment.class.getSimpleName(), "getLoaderManager().destroyLoader(" + i + ")");
-                getLoaderManager().destroyLoader(i);
-            }
-        });*/
         elvDays.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
@@ -157,12 +148,9 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
         switch (loader.getId()) {
             case DAYS_LOADER:
                 mAdapter.setGroupCursor(data);
-                mAdapter.notifyDataSetChanged();
-//                elvDays.expandGroup(0);
                 break;
             default:
                 mAdapter.setChildrenCursor(loader.getId(), data);
-                mAdapter.notifyDataSetChanged();
                 break;
         }
     }
@@ -179,13 +167,16 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
         }
     }
 
-    private void startLoader(int id, Bundle args) {
-        getLoaderManager().initLoader(id, args, this);
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(OverviewFragment.class.getSimpleName(), "mAdapter.requery()");
+        mAdapter.requery();
     }
 
     public class ExpandableListCursorAdapter extends BaseExpandableListAdapter {
         public LayoutInflater inflater;
-        public Activity activity;
+        public OverviewFragment overviewFragment;
         private Cursor mGroupCursor;
         private SparseArray<Cursor> mCursorSparseArray = new SparseArray<Cursor>();
         private int mExpandedGroupLayout;
@@ -201,8 +192,8 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
         private boolean mHasExpandedGroupLayout;
         private boolean mHasLastChildLayout;
 
-        public ExpandableListCursorAdapter(Activity activity, Cursor groupCursor, int expandedGroupLayout, int collapsedGroupLayout, String[] groupFromNames, int[] groupTo, int childLayout, int lastChildLayout, String[] childFromNames, int[] childTo) {
-            this.activity = activity;
+        public ExpandableListCursorAdapter(OverviewFragment overviewFragment, Cursor groupCursor, int expandedGroupLayout, int collapsedGroupLayout, String[] groupFromNames, int[] groupTo, int childLayout, int lastChildLayout, String[] childFromNames, int[] childTo) {
+            this.overviewFragment = overviewFragment;
             this.mGroupCursor = groupCursor;
             this.mExpandedGroupLayout = expandedGroupLayout;
             this.mGroupFromNames = groupFromNames;
@@ -219,7 +210,13 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
             mHasLastChildLayout = true;
 
 
-            inflater = activity.getLayoutInflater();
+            inflater = overviewFragment.getActivity().getLayoutInflater();
+        }
+
+        public void requery() {
+            // Obtain all cursors again
+            overviewFragment.getLoaderManager().destroyLoader(DAYS_LOADER);
+            overviewFragment.getLoaderManager().initLoader(DAYS_LOADER, null, overviewFragment);
         }
 
         private int[] findColumns(Cursor cursor, String[] fromNames) {
@@ -270,7 +267,7 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
             } else {
                 // Call the function to start the loader
                 int id = groupCursor.getPosition();
-                startLoader(id, args);
+                getLoaderManager().initLoader(id, args, this.overviewFragment);
                 return null;
             }
         }
@@ -367,54 +364,5 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
             return true;
         }
     }
-
-    /*public class ExpandableListCursorAdapter extends SimpleCursorTreeAdapter {
-        public boolean doNotDestroyCursor = false;
-
-        public ExpandableListCursorAdapter(Context activity, OverviewFragment overviewFragment, Cursor cursor, int groupLayout, String[] groupFrom, int[] groupTo, int childLayout, String[] childFrom, int[] childTo) {
-            super(activity, cursor, groupLayout, groupFrom, groupTo, childLayout, childFrom, childTo);
-        }
-
-        public ExpandableListCursorAdapter(Context activity, OverviewFragment overviewFragment, int collapsedGroupLayout, int expandedGroupLayout, String[] groupFrom, int[] groupTo, int childLayout, int lastChildLayout, String[] childFrom, int[] childTo, Cursor cursor) {
-            super(activity, cursor, collapsedGroupLayout, expandedGroupLayout, groupFrom, groupTo, childLayout, lastChildLayout, childFrom, childTo);
-        }
-
-        public ExpandableListCursorAdapter(Context activity, OverviewFragment overviewFragment, int collapsedGroupLayout, int expandedGroupLayout, String[] groupFrom, int[] groupTo, int childLayout, String[] childFrom, int[] childTo, Cursor cursor) {
-            super(activity, cursor, collapsedGroupLayout, expandedGroupLayout, groupFrom, groupTo, childLayout, childFrom, childTo);
-        }
-
-        public ExpandableListCursorAdapter(Context activity, OverviewFragment overviewFragment, int groupLayout, String[] groupFrom, int[] groupTo, int childLayout, String[] childFrom, int[] childTo, Cursor cursor) {
-            super(activity, cursor, groupLayout, groupFrom, groupTo, childLayout, childFrom, childTo);
-        }
-
-        @Override
-        public void setChildrenCursor(int groupPosition, Cursor childrenCursor) {
-            super.setChildrenCursor(groupPosition, childrenCursor);
-        }
-
-        @Override
-        protected Cursor getChildrenCursor(Cursor groupCursor) {
-            // Given a day group, we return all the transactions within that day
-
-            // First, find out what the date of the current position in groupCursor is
-            String dateString = groupCursor.getString(groupCursor.getColumnIndex(TransactionsTable.DATE));
-
-            // Next, put the dateString into the args to pass to the CursorLoader
-            Bundle args = new Bundle();
-            args.putString(TransactionsTable.DATE, dateString);
-
-            // Call the function to start the loader
-
-            int id = groupCursor.getPosition();
-            Loader loader = getActivity().getSupportLoaderManager().getLoader(id);
-//            if (loader != null && !loader.isReset()) {
-//                // Restart the loader
-//                restartLoader(id, args);
-//            } else {
-                startLoader(id, args);
-//            }
-            return null;
-        }
-    }*/
 
 }
