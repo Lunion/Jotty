@@ -186,6 +186,7 @@ public class RecordFragment extends Fragment
 
                 }
             } else {
+                // TODO extract these codes into onRestoreInstanceState
                 // This is a recreation, might be new or existing transaction
                 // Reload all values saved from last instance
                 transactionUri = savedInstanceState.getParcelable(EntriesProvider.CONTENT_ITEM_TYPE);

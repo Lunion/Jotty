@@ -32,6 +32,7 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d(OverviewFragment.class.getName(), "onCreateView()");
         view = inflater.inflate(R.layout.overview_fragment, container, false);
 
         assert view != null;
@@ -80,6 +81,8 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Retain this instance. However, should not retain when rewriting for tablet layouts
+        setRetainInstance(true);
     }
 
     @Override
@@ -134,7 +137,9 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
                 // e.g. converting date string and currency into user format
                 mAdapter.setGroupCursor(data);
                 mAdapter.requeryChildrenCursor();
-                elvDays.expandGroup(0);
+                if (mAdapter.getGroupCursor().getCount() > 0) {
+                    elvDays.expandGroup(0);
+                }
                 break;
             default:
                 // Handle processing/translation of cursor data here
@@ -159,10 +164,10 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(OverviewFragment.class.getSimpleName(), "mAdapter.requery()");
-        mAdapter.requery();
         // Reconnect the fragment
         mAdapter.setOverviewFragment(this);
+        Log.d(OverviewFragment.class.getSimpleName(), "mAdapter.requery()");
+        mAdapter.requery();
     }
 
     public class ExpandableListCursorAdapter extends BaseExpandableListAdapter {
@@ -212,7 +217,6 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
             // Obtain all cursors again
             overviewFragment.getLoaderManager().destroyLoader(GROUP_CURSOR_LOADER);
             overviewFragment.getLoaderManager().initLoader(GROUP_CURSOR_LOADER, null, overviewFragment);
-
         }
 
         private void requeryChildrenCursor() {
@@ -223,6 +227,7 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
                 childCursor.moveToFirst();
                 // Find out which group we are dealing with
                 Cursor groupCursor = getGroup(childLoaderId);
+                assert groupCursor != null;
                 String dateString = groupCursor.getString(groupCursor.getColumnIndexOrThrow(TransactionsTable.DATE));
                 Bundle args = new Bundle();
                 args.putString(TransactionsTable.DATE, dateString);
@@ -353,7 +358,6 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
                 assert groupCursor != null;
                 textView.setText(groupCursor.getString(mGroupFrom[i]));
             }
-
 
             return convertView;
         }

@@ -3,7 +3,6 @@ package com.lawenlerk.jotcash;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -12,7 +11,7 @@ import android.view.MenuItem;
 
 public class MainActivity extends ActionBarActivity {
     RecordFragment recordFragment;
-    OverviewFragment overviewFragment;
+    private OverviewFragment overviewFragment;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -45,15 +44,15 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         Log.d(MainActivity.class.getName(), "onCreate()");
-        if (savedInstanceState == null) {
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        overviewFragment = (OverviewFragment) fragmentManager.findFragmentByTag("overviewFragment");
+
+        if (overviewFragment == null) {
             // Creating new fragment
             Log.d(MainActivity.class.getName(), "Creating new fragment");
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
             overviewFragment = new OverviewFragment();
-            fragmentTransaction.add(R.id.fragment_container, overviewFragment);
-            fragmentTransaction.commit();
+            fragmentManager.beginTransaction().add(R.id.fragment_container, overviewFragment, "overviewFragment").commit();
         }
 
     }
