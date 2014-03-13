@@ -22,20 +22,10 @@ import android.widget.TextView;
 import com.lawenlerk.jotcash.database.TransactionsTable;
 import com.lawenlerk.jotcash.provider.EntriesProvider;
 
-/**
- * Created by enlerklaw on 2/24/14.
- */
+
 public class OverviewFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
-    private static final String[] PROJECTION = new String[]{
-            TransactionsTable.ID,
-            TransactionsTable.AMOUNT
-    };
-    private static final String SELECTION = null;
-    private static final String[] SELECTIONARGS = null;
-    private static final String SORTORDER = "date(" + TransactionsTable.DATE + ") DESC" + ", " + "datetime(" + TransactionsTable.TIME_CREATED + ") DESC";
     private static final int GROUP_CURSOR_LOADER = -99; // Arbitrarily picked integer to avoid clash with group positions
     View view;
-    //    ListView lvTransactions;
     ExpandableListView elvDays;
     ExpandableListCursorAdapter mAdapter;
 
@@ -44,11 +34,8 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.overview_fragment, container, false);
 
-//        lvTransactions = (ListView) view.findViewById(R.id.lvTransactions);
+        assert view != null;
         elvDays = (ExpandableListView) view.findViewById(R.id.overviewFragment_elvDays);
-
-        String[] fromColumns = {TransactionsTable.AMOUNT};
-        int[] toViews = {android.R.id.text1};
 
         // TODO use ListViewAnimations with ExpandableListView to group days
 
@@ -86,10 +73,6 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
                 return false;
             }
         });
-
-
-        // Query for days and sum of amounts
-        getLoaderManager().initLoader(GROUP_CURSOR_LOADER, null, this);
 
         return view;
     }
@@ -150,6 +133,7 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
                 // Handle processing/translation of cursor data here
                 // e.g. converting date string and currency into user format
                 mAdapter.setGroupCursor(data);
+                mAdapter.requeryChildrenCursor();
                 elvDays.expandGroup(0);
                 break;
             default:
@@ -228,6 +212,23 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
             // Obtain all cursors again
             overviewFragment.getLoaderManager().destroyLoader(GROUP_CURSOR_LOADER);
             overviewFragment.getLoaderManager().initLoader(GROUP_CURSOR_LOADER, null, overviewFragment);
+
+        }
+
+        private void requeryChildrenCursor() {
+            // Loop through all the children cursors then destroy and init the loaders
+            for (int i = 0; i < mCursorSparseArray.size(); i++) {
+                int childLoaderId = mCursorSparseArray.keyAt(i);
+                Cursor childCursor = mCursorSparseArray.get(childLoaderId); // childLoaderId = key = groupPosition
+                childCursor.moveToFirst();
+                // Find out which group we are dealing with
+                Cursor groupCursor = getGroup(childLoaderId);
+                String dateString = groupCursor.getString(groupCursor.getColumnIndexOrThrow(TransactionsTable.DATE));
+                Bundle args = new Bundle();
+                args.putString(TransactionsTable.DATE, dateString);
+                overviewFragment.getLoaderManager().destroyLoader(childLoaderId);
+                overviewFragment.getLoaderManager().initLoader(childLoaderId, args, overviewFragment);
+            }
         }
 
         private int[] findColumns(Cursor cursor, String[] fromNames) {
@@ -264,6 +265,7 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
             Cursor groupCursor = getGroup(groupPosition);
 
             // First, find out what the date of the current position in groupCursor is
+            assert groupCursor != null;
             String dateString = groupCursor.getString(groupCursor.getColumnIndex(TransactionsTable.DATE));
 
             // Next, put the dateString into the args to pass to the CursorLoader
@@ -318,12 +320,14 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
         @Override
         public long getGroupId(int groupPosition) {
             Cursor groupCursor = getGroup(groupPosition);
+            assert groupCursor != null;
             return groupCursor.getLong(groupCursor.getColumnIndexOrThrow("_id"));
         }
 
         @Override
         public long getChildId(int groupPosition, int childPosition) {
             Cursor childCursor = getChild(groupPosition, childPosition);
+            assert childCursor != null;
             return childCursor.getLong(childCursor.getColumnIndexOrThrow("_id"));
         }
 
@@ -344,7 +348,9 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
             Cursor groupCursor = getGroup(groupPosition);
             TextView textView;
             for (int i = 0; i < mGroupFrom.length; i++) {
+                assert convertView != null;
                 textView = (TextView) convertView.findViewById(mGroupTo[i]);
+                assert groupCursor != null;
                 textView.setText(groupCursor.getString(mGroupFrom[i]));
             }
 
@@ -364,7 +370,9 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
             Cursor childCursor = getChild(groupPosition, childPosition);
             TextView textView;
             for (int i = 0; i < mChildFrom.length; i++) {
+                assert convertView != null;
                 textView = (TextView) convertView.findViewById(mChildTo[i]);
+                assert childCursor != null;
                 textView.setText(childCursor.getString(mChildFrom[i]));
             }
 

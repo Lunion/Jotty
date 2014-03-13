@@ -17,6 +17,7 @@
       </GradleProjectSettings>
     </option>
     <option name="serviceDirectoryPath" value="$USER_HOME$/gradle-1.9-all/gradle-1.9" />
+    <option name="offlineWork" value="true" />
   </component>
 </project>
 
