@@ -455,20 +455,7 @@ public class RecordFragment extends Fragment
     }
 
     private String toCurrency(Double amount, int decimals) {
-        return padCurrency(padZeroes(amount, decimals));
-    }
-
-    private String padZeroes(Double amount, int decimals) {
-        String amountString = Double.toString(amount);
-        for (int i = amountString.length() - (amountString.indexOf('.') + 1); i < decimals; i++) {
-            amountString = amountString + '0';
-        }
-        return amountString;
-    }
-
-    private String padCurrency(String amountString) {
-        String currencyString = "SGD"; // TODO extract this into settings
-        return amountString + " " + currencyString;
+        return Utilities.addCurrencyString(Utilities.padZeroes(amount, decimals));
     }
 
     private void insertTransaction(Transaction transaction) {

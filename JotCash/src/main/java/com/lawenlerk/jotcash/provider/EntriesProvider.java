@@ -31,14 +31,14 @@ public class EntriesProvider extends ContentProvider {
     private static final String AUTHORITY = "com.lawenlerk.jotcash.provider";
     public static final Uri TRANSACTIONS_URI = Uri.parse("content://" + AUTHORITY + "/" + TransactionsTable.TABLE_NAME);
     public static final Uri CATEGORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + "categories");  // For convenience to utilise groupby
-    public static final Uri DAYS_URI = Uri.parse("content://" + AUTHORITY + "/" + "days"); // For convenience to utilise groupby
+    public static final Uri DAYS_URI = Uri.parse("content://" + AUTHORITY + "/" + TransactionsTable.TABLE_NAME + "/" + "days"); // For convenience to utilise groupby
     private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
         sUriMatcher.addURI(AUTHORITY, TransactionsTable.TABLE_NAME, TRANSACTIONS);
         sUriMatcher.addURI(AUTHORITY, TransactionsTable.TABLE_NAME + "/#", TRANSACTION_ID);
         sUriMatcher.addURI(AUTHORITY, "categories", CATEGORIES);
-        sUriMatcher.addURI(AUTHORITY, "days", DAYS);
+        sUriMatcher.addURI(AUTHORITY, TransactionsTable.TABLE_NAME + "/" + "days", DAYS);
     }
 
     // database
@@ -129,6 +129,7 @@ public class EntriesProvider extends ContentProvider {
                 long transactionId = database.insert(TransactionsTable.TABLE_NAME, null, contentValues);
                 Log.v("EntriesProvider", "Inserted transaction into database");
 
+                getContext().getContentResolver().notifyChange(DAYS_URI, null);
                 getContext().getContentResolver().notifyChange(uri, null);
                 return Uri.parse(TRANSACTIONS_URI + "/" + transactionId);
 
@@ -162,6 +163,7 @@ public class EntriesProvider extends ContentProvider {
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
         Log.v("EntriesProvider", "Deleted transaction from database");
+        getContext().getContentResolver().notifyChange(DAYS_URI, null);
         getContext().getContentResolver().notifyChange(uri, null);
         return rowsDeleted;
     }
@@ -191,6 +193,7 @@ public class EntriesProvider extends ContentProvider {
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
         Log.v("EntriesProvider", "Updated database");
+        getContext().getContentResolver().notifyChange(DAYS_URI, null);
         getContext().getContentResolver().notifyChange(uri, null);
         return rowsUpdated;
     }

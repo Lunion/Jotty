@@ -6,7 +6,7 @@
     android:background="@drawable/card_lastchild"
     android:padding="@dimen/card_padding">
 
-<TextView
+    <TextView
         android:id="@+id/dayChild_tvCategory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

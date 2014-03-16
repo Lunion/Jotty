@@ -11,7 +11,6 @@ import android.view.MenuItem;
 
 public class MainActivity extends ActionBarActivity {
     RecordFragment recordFragment;
-    private OverviewFragment overviewFragment;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -45,8 +44,17 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.main_activity);
         Log.d(MainActivity.class.getName(), "onCreate()");
 
+/*        if (savedInstanceState == null) {
+            OverviewFragment overviewFragment = new OverviewFragment();
+            overviewFragment.setArguments(getIntent().getExtras());
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, overviewFragment, "overviewFragment").commit();
+        } else {
+            OverviewFragment overviewFragment = (OverviewFragment) getSupportFragmentManager().findFragmentByTag("overviewFragment");
+        }*/
+
         FragmentManager fragmentManager = getSupportFragmentManager();
-        overviewFragment = (OverviewFragment) fragmentManager.findFragmentByTag("overviewFragment");
+
+        OverviewFragment overviewFragment = (OverviewFragment) fragmentManager.findFragmentByTag("overviewFragment");
 
         if (overviewFragment == null) {
             // Creating new fragment
@@ -54,7 +62,5 @@ public class MainActivity extends ActionBarActivity {
             overviewFragment = new OverviewFragment();
             fragmentManager.beginTransaction().add(R.id.fragment_container, overviewFragment, "overviewFragment").commit();
         }
-
     }
-
 }
