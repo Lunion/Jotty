@@ -356,7 +356,7 @@ public class RecordFragment extends Fragment
         FragmentManager fragmentManager = getChildFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        NumberPickerDialogFragment numberPickerDialogFragment = NumberPickerDialogFragment.newInstance(0, R.style.BetterPickersDialogFragment_Light, null, null, View.INVISIBLE, View.VISIBLE, "SGD");// TODO let user select currency string from settings
+        NumberPickerDialogFragment numberPickerDialogFragment = NumberPickerDialogFragment.newInstance(0, R.style.BetterPickersDialogFragment_Light, null, null, View.INVISIBLE, View.VISIBLE, Utilities.getCurrencyString());// TODO let user select currency string from settings
         numberPickerDialogFragment.setTargetFragment(this, 0);
         numberPickerDialogFragment.show(fragmentManager, "numberPickerDialogFragment");
 

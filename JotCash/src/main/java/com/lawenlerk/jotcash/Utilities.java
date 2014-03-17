@@ -9,6 +9,8 @@ import java.util.Date;
  * Created by EnLerk on 3/15/14.
  */
 public abstract class Utilities {
+    private static String currencyString = "$"; // TODO extract this into settings
+
     public static Date parseDate(String dateString, String dateFormat) throws ParseException {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
         return simpleDateFormat.parse(dateString);
@@ -25,9 +27,11 @@ public abstract class Utilities {
 //    }
 
     public static String addCurrencyString(String amountString) {
-        String currencyString = "$"; // TODO extract this into settings
-
         return currencyString + " " + amountString;
+    }
+
+    public static String getCurrencyString() {
+        return currencyString;
     }
 
     public static String padZeroes(Double amount, int decimals) {
