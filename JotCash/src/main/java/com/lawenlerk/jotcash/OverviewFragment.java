@@ -32,14 +32,6 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
     private ExpandableListView elvDays;
     private ExpandableListCursorAdapter mAdapter;
 
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        // We destroy the cursors if there are any. Don't have to init any as this will be done automatically
-//        mAdapter.restartCursors();
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(OverviewFragment.class.getName(), "onCreateView()");
@@ -210,47 +202,6 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
             this.activity = activity;
             this.inflater = this.activity.getLayoutInflater();
         }
-
-        public void restartCursors() {
-            LoaderManager loaderManager = overviewFragment.getLoaderManager();
-
-            // Destroy the children cursors
-            for (int i = 0; i < mCursorSparseArray.size(); i++) {
-                int childLoaderId = mCursorSparseArray.keyAt(i);
-                loaderManager.destroyLoader(childLoaderId);
-                Log.d(OverviewFragment.class.getName(), "Removed " + i);
-            }
-            while (mCursorSparseArray.size() > 0) {
-                int key = mCursorSparseArray.keyAt(0);
-                mCursorSparseArray.remove(key);
-            }
-//            mGroupCursor = null;
-//            loaderManager.destroyLoader(GROUP_CURSOR_LOADER);
-//            loaderManager.initLoader(GROUP_CURSOR_LOADER, null, overviewFragment);
-
-/*            // First restart the children cursors
-            for (int i = 0; i < mCursorSparseArray.size(); i++) {
-                int childLoaderId = mCursorSparseArray.keyAt(i);
-                Cursor childCursor = mCursorSparseArray.get(childLoaderId); // childLoaderId = key = groupPosition
-                childCursor.moveToFirst();
-                // Find out which group we are dealing with
-                Cursor groupCursor = getGroup(childLoaderId);
-                assert groupCursor != null;
-                String dateString = groupCursor.getString(groupCursor.getColumnIndexOrThrow(TransactionsTable.DATE));
-                Bundle args = new Bundle();
-                args.putString(TransactionsTable.DATE, dateString);
-                mCursorSparseArray.remove(childLoaderId);
-                loaderManager.destroyLoader(childLoaderId);
-                loaderManager.initLoader(childLoaderId, args, overviewFragment);
-            }
-
-            // Then restart the group cursors
-            loaderManager.destroyLoader(GROUP_CURSOR_LOADER);
-            loaderManager.initLoader(GROUP_CURSOR_LOADER, null, overviewFragment);*/
-        }
-
-/*        private void requeryChildrenCursor() {
-        }*/
 
         private int[] findColumns(Cursor cursor, String[] fromNames) {
             if (cursor != null) {
