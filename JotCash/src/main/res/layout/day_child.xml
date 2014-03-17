@@ -6,24 +6,29 @@
     android:background="@color/white"
     android:padding="@dimen/card_padding">
 
-<TextView
+    <TextView
         android:id="@+id/dayChild_tvCategory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true"
+        android:text="Category"
+        android:textColor="@color/text_primary" />
 
     <TextView
         android:id="@+id/dayChild_tvDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/dayChild_tvCategory" />
+        android:layout_below="@+id/dayChild_tvCategory"
+        android:text="Description"
+        android:textColor="@color/text_secondary" />
 
     <TextView
         android:id="@+id/dayChild_tvAmount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true" />
+        android:layout_alignParentRight="true"
+        android:text="$ 20.00" />
 
 </RelativeLayout>

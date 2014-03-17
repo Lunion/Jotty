@@ -445,7 +445,7 @@ public class RecordFragment extends Fragment
     }
 
     private String toCurrency(Double amount, int decimals) {
-        return Utilities.addCurrencyString(Utilities.padZeroes(amount, decimals));
+        return Utilities.addCurrencyString(Utilities.toDecimals(amount, decimals));
     }
 
     private void insertTransaction(Transaction transaction) {

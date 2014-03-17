@@ -23,7 +23,7 @@ public class MainActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add_transaction:
-                launchRecordFragment();
+                launchRecordActivity();
                 return true;
             case R.id.action_settings:
                 return true;
@@ -32,7 +32,7 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    private void launchRecordFragment() {
+    private void launchRecordActivity() {
         Intent intent = new Intent(this, RecordActivity.class);
         startActivity(intent);
 

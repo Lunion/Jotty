@@ -1,4 +1,3 @@
-// TODO Handle configuration changes. Currently, switching orientation Portrait -> Landscape -> Portrait results in crash. Possible disconnected activity. Debug to find out more
 package com.lawenlerk.jotcash;
 
 
@@ -91,6 +90,7 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
 
         switch (id) {
             case GROUP_CURSOR_LOADER:
+                // TODO perform all analysis in separate analysis unit instead of using SQLite
                 projection = new String[]{
                         TransactionsTable.DATE + " AS _id",
                         TransactionsTable.DATE,
@@ -105,12 +105,13 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
                 return new CursorLoader(getActivity(), EntriesProvider.DAYS_URI, projection, selection, selectionArgs, sortOrder);
 
             default:
-                // Group position was passed in as loader id
+                // Group position was passed in as loader id, load child
                 projection = new String[]{
                         TransactionsTable.ID + " AS _id",
                         TransactionsTable.CATEGORY,
                         TransactionsTable.DESCRIPTION,
-                        TransactionsTable.AMOUNT
+                        TransactionsTable.AMOUNT,
+                        TransactionsTable.TYPE
                 };
 
                 // Get the date to query from the args
@@ -422,6 +423,9 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
                 textView = (TextView) convertView.findViewById(mChildTo[i]);
                 textView.setText(data.get(mChildFrom[i]));
             }
+
+            // Apply color to amount
+            TextView tvAmount = (TextView) convertView.findViewById(R.id.dayChild_tvAmount);
 
             return convertView;
         }

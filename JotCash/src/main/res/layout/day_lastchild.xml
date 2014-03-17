@@ -11,14 +11,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true"
+        android:textColor="@color/text_primary" />
 
     <TextView
         android:id="@+id/dayChild_tvDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/dayChild_tvCategory" />
+        android:layout_below="@+id/dayChild_tvCategory"
+        android:textColor="@color/text_primary" />
 
     <TextView
         android:id="@+id/dayChild_tvAmount"
