@@ -23,15 +23,14 @@
             style="@style/day_group_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2014-02-12" />
+            android:text="12 Mar 2014" />
 
         <TextView
             android:id="@+id/dayGroup_tvDayTotal"
             style="@style/day_group_day_total"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="20.00 SGD"
-            android:textColor="@color/expense" />
+            android:text="20.00 SGD" />
     </RelativeLayout>
 
 

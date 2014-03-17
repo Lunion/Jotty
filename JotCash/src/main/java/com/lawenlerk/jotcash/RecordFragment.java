@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -345,18 +344,9 @@ public class RecordFragment extends Fragment
     }
 
     private void launchNumberPicker() {
-/*        numberPickerBuilder = new NumberPickerBuilder();
-        numberPickerBuilder.setFragmentManager(getChildFragmentManager());
-        numberPickerBuilder.setStyleResId(R.style.BetterPickersDialogFragment_Light);
-        numberPickerBuilder.setTargetFragment(this);
-        numberPickerBuilder.setPlusMinusVisibility(View.INVISIBLE);
-        numberPickerBuilder.setLabelText("SGD");
-        numberPickerBuilder.show();*/
-
         FragmentManager fragmentManager = getChildFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        NumberPickerDialogFragment numberPickerDialogFragment = NumberPickerDialogFragment.newInstance(0, R.style.BetterPickersDialogFragment_Light, null, null, View.INVISIBLE, View.VISIBLE, Utilities.getCurrencyString());// TODO let user select currency string from settings
+        NumberPickerDialogFragment numberPickerDialogFragment = NumberPickerDialogFragment.newInstance(0, R.style.BetterPickersDialogFragment_Light, null, null, View.INVISIBLE, View.VISIBLE, Utilities.getCurrencyString());
         numberPickerDialogFragment.setTargetFragment(this, 0);
         numberPickerDialogFragment.show(fragmentManager, "numberPickerDialogFragment");
 

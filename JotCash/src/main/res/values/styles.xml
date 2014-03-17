@@ -19,12 +19,14 @@
     </style>
 
     <style name="day_group_date">
-        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">#FF878787</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
     <style name="day_group_day_total">
         <item name="android:layout_alignParentRight">true</item>
-        <item name="android:textSize">24sp</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/expense</item>
     </style>
 
 </resources>
