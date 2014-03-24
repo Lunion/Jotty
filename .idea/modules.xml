@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/JotCash.iml" filepath="$PROJECT_DIR$/JotCash.iml" />
-      <module fileurl="file://$PROJECT_DIR$/JotCash/JotCash-JotCash.iml" filepath="$PROJECT_DIR$/JotCash/JotCash-JotCash.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Jotty.iml" filepath="$PROJECT_DIR$/Jotty.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Jotty.iml" filepath="$PROJECT_DIR$/Jotty.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Jotty/Jotty-Jotty.iml" filepath="$PROJECT_DIR$/Jotty/Jotty-Jotty.iml" />
       <module fileurl="file://$PROJECT_DIR$/libraries/swipelistview/swipelistview.iml" filepath="$PROJECT_DIR$/libraries/swipelistview/swipelistview.iml" />
     </modules>
   </component>
