@@ -28,7 +28,7 @@ public class EntriesProvider extends ContentProvider {
     private static final int TRANSACTION_ID = 2;
     private static final int CATEGORIES = 3;
     private static final int DAYS = 4;
-    private static final String AUTHORITY = "com.lawenlerk.jotcash.provider";
+    private static final String AUTHORITY = "com.lawenlerk.jotty.provider";
     public static final Uri TRANSACTIONS_URI = Uri.parse("content://" + AUTHORITY + "/" + TransactionsTable.TABLE_NAME);
     public static final Uri CATEGORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + "categories");  // For convenience to utilise groupby
     public static final Uri DAYS_URI = Uri.parse("content://" + AUTHORITY + "/" + TransactionsTable.TABLE_NAME + "/" + "days"); // For convenience to utilise groupby

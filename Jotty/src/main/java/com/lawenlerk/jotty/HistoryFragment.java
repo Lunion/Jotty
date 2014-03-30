@@ -246,6 +246,9 @@ public class HistoryFragment extends Fragment implements LoaderManager.LoaderCal
         }
 
         public void swapChildrenCursor(int key, Cursor childrenCursor) {
+            if (mCursorSparseArray.get(key) != null) {
+                mCursorSparseArray.delete(key);
+            }
             mCursorSparseArray.put(key, childrenCursor);
             mChildFrom = findColumns(childrenCursor, mChildFromNames);
             mAdapter.notifyDataSetChanged();
@@ -296,8 +299,8 @@ public class HistoryFragment extends Fragment implements LoaderManager.LoaderCal
         }
 
         @Override
-        public int getChildrenCount(int key) {
-            Cursor childrenCursor = getChildrenCursor(key);
+        public int getChildrenCount(int position) {
+            Cursor childrenCursor = getChildrenCursor(position);
             if (childrenCursor != null) {
                 return childrenCursor.getCount();
             }

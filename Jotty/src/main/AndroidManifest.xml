@@ -24,14 +24,13 @@
             android:authorities="com.lawenlerk.jotty.provider" />
 
         <activity
-            android:name=".TransactionActivity"
+            android:name="com.lawenlerk.jotty.TransactionActivity"
             android:label="@string/add_a_transaction"
             android:parentActivityName="com.lawenlerk.jotty.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="MainActivity" />
         </activity>
-
     </application>
 
 </manifest>

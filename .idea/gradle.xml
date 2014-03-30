@@ -8,10 +8,10 @@
         <option name="gradleHome" value="$USER_HOME$/gradle-1.9-all/gradle-1.9" />
         <option name="modules">
           <set>
-            <option value="C:\Users\enlerklaw\AndroidStudioProjects\Jotty" />
-            <option value="C:\Users\enlerklaw\AndroidStudioProjects\Jotty\Jotty" />
-            <option value="C:\Users\enlerklaw\AndroidStudioProjects\Jotty\libraries" />
-            <option value="C:\Users\enlerklaw\AndroidStudioProjects\Jotty\libraries\swipelistview" />
+            <option value="C:\Users\EnLerk\AndroidStudioProjects\Jotty" />
+            <option value="C:\Users\EnLerk\AndroidStudioProjects\Jotty\Jotty" />
+            <option value="C:\Users\EnLerk\AndroidStudioProjects\Jotty\libraries" />
+            <option value="C:\Users\EnLerk\AndroidStudioProjects\Jotty\libraries\swipelistview" />
           </set>
         </option>
       </GradleProjectSettings>

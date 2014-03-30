@@ -1,11 +1,13 @@
 package com.lawenlerk.jotty;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -43,17 +45,19 @@ public class MainActivity extends ActionBarActivity
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
         switch (position) {
-            case 1:
+            case 0:
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, OverviewFragment.newInstance())
                         .commit();
+                Log.d(MainActivity.class.getName(), "Creating OverviewFragment");
                 break;
-            case 2:
+            case 1:
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, HistoryFragment.newInstance())
                         .commit();
+                Log.d(MainActivity.class.getName(), "Creating HistoryFragment");
                 break;
-            case 3:
+            case 2:
                 break;
         }
     }
@@ -99,10 +103,19 @@ public class MainActivity extends ActionBarActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_add_transaction:
+                addNewTransaction();
+                return true;
+            case R.id.action_settings:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
+    }
+
+    private void addNewTransaction() {
+        startActivity(new Intent(this, TransactionActivity.class));
     }
 
     @Override
