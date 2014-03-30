@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Jotty.iml" filepath="$PROJECT_DIR$/Jotty.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Jotty.iml" filepath="$PROJECT_DIR$/Jotty.iml" />
       <module fileurl="file://$PROJECT_DIR$/Jotty/Jotty-Jotty.iml" filepath="$PROJECT_DIR$/Jotty/Jotty-Jotty.iml" />
       <module fileurl="file://$PROJECT_DIR$/libraries/swipelistview/swipelistview.iml" filepath="$PROJECT_DIR$/libraries/swipelistview/swipelistview.iml" />
     </modules>

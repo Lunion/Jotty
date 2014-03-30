@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.lawenlerk.jotty" >
+    package="com.lawenlerk.jotty">
 
     <uses-permission android:name="android.permission.VIBRATE" />
 
@@ -8,10 +8,10 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
-            android:name="com.lawenlerk.jotty.OldMainActivity"
-            android:label="@string/app_name" >
+            android:name="com.lawenlerk.jotty.MainActivity"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,22 +24,14 @@
             android:authorities="com.lawenlerk.jotty.provider" />
 
         <activity
-            android:name="com.lawenlerk.jotty.RecordActivity"
+            android:name=".TransactionActivity"
             android:label="@string/add_a_transaction"
-            android:parentActivityName="com.lawenlerk.jotty.OldMainActivity" >
+            android:parentActivityName="com.lawenlerk.jotty.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="MainActivity" />
         </activity>
-        <activity
-            android:name="com.lawenlerk.jotty.MainActivity"
-            android:label="@string/title_activity_main" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
     </application>
 
 </manifest>

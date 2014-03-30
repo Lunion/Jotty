@@ -39,7 +39,7 @@ import java.util.Date;
 /**
  * Created by En Lerk on 2/6/14.
  */
-public class RecordFragment extends Fragment
+public class TransactionFragment extends Fragment
         implements CalendarDatePickerDialog.OnDateSetListener,
         NumberPickerDialogFragment.NumberPickerDialogHandler,
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -82,7 +82,7 @@ public class RecordFragment extends Fragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.record_fragment, container, false);
+        view = inflater.inflate(R.layout.fragment_transaction, container, false);
 
         if (view != null) {
             btAmount = (Button) view.findViewById(R.id.etAmount);
@@ -135,14 +135,14 @@ public class RecordFragment extends Fragment
             llvCategoryPicker.setOnItemClickListener(new LinearListView.OnItemClickListener() {
                 @Override
                 public void onItemClick(LinearListView linearListView, View view, int position, long id) {
-                    Log.d("RecordFragment", Long.toString(id));
+                    Log.d("TransactionFragment", Long.toString(id));
                     Cursor cursor;
                     if (transaction.type.equals(Transaction.EXPENSE)) {
                         cursor = expenseAdapter.getCursor();
                     } else {
                         cursor = incomeAdapter.getCursor();
                     }
-                    Log.d("RecordFragment", "cursor.getCount()=" + cursor.getCount());
+                    Log.d("TransactionFragment", "cursor.getCount()=" + cursor.getCount());
                     cursor.moveToPosition(position);
                     transaction.category = cursor.getString(cursor.getColumnIndex(TransactionsTable.CATEGORY));
                     cursor.close();
@@ -209,7 +209,7 @@ public class RecordFragment extends Fragment
                 // Check if there is an existing CalendarDatePickerDialog(Fragment)
                 CalendarDatePickerDialog calendarDatePickerDialogFragment = (CalendarDatePickerDialog) getChildFragmentManager().findFragmentByTag("calendarDatePickerDialogFragment");
                 if (calendarDatePickerDialogFragment != null) {
-                    calendarDatePickerDialogFragment.setOnDateSetListener(RecordFragment.this);
+                    calendarDatePickerDialogFragment.setOnDateSetListener(TransactionFragment.this);
                 }
 
             }
@@ -276,20 +276,20 @@ public class RecordFragment extends Fragment
         ContentValues contentValues = new ContentValues();
 
         contentValues.put(TransactionsTable.AMOUNT, transaction.amount);
-        Log.i("RecordFragment", "Put " + transaction.amount);
+        Log.i("TransactionFragment", "Put " + transaction.amount);
 
         contentValues.put(TransactionsTable.TYPE, transaction.type);
-        Log.i("RecordFragment", "Put " + transaction.type);
+        Log.i("TransactionFragment", "Put " + transaction.type);
 
         SimpleDateFormat dateFormat = new SimpleDateFormat(getString(R.string.database_date_format));
         contentValues.put(TransactionsTable.DATE, dateFormat.format(transaction.date.getTime()));
-        Log.i("RecordFragment", "Put " + dateFormat.format(transaction.date.getTime()));
+        Log.i("TransactionFragment", "Put " + dateFormat.format(transaction.date.getTime()));
 
         contentValues.put(TransactionsTable.DESCRIPTION, transaction.description);
-        Log.i("RecordFragment", "Put " + transaction.description);
+        Log.i("TransactionFragment", "Put " + transaction.description);
 
         contentValues.put(TransactionsTable.CATEGORY, transaction.category);
-        Log.i("RecordFragment", "Put " + transaction.category);
+        Log.i("TransactionFragment", "Put " + transaction.category);
 
         getActivity().getContentResolver().update(transactionUri, contentValues, null, null);
 
@@ -303,9 +303,9 @@ public class RecordFragment extends Fragment
                 TransactionsTable.DESCRIPTION,
                 TransactionsTable.CATEGORY
         };
-        Log.d("RecordFragment", "Loading: " + transactionUri.toString());
+        Log.d("TransactionFragment", "Loading: " + transactionUri.toString());
         Cursor cursor = getActivity().getContentResolver().query(transactionUri, projection, null, null, null);
-        Log.d("RecordFragment", Integer.toString(cursor.getCount()));
+        Log.d("TransactionFragment", Integer.toString(cursor.getCount()));
         cursor.moveToFirst();
         setAmount(cursor.getDouble(cursor.getColumnIndex(TransactionsTable.AMOUNT)));
         setType(cursor.getString(cursor.getColumnIndex(TransactionsTable.TYPE)));
@@ -457,23 +457,23 @@ public class RecordFragment extends Fragment
         transaction.timeCreated = Calendar.getInstance();
         DateFormat dateFormat = new SimpleDateFormat(getString(R.string.database_date_time_format));
         contentValues.put(TransactionsTable.TIME_CREATED, dateFormat.format(transaction.timeCreated.getTime()));
-        Log.i("RecordFragment", "Put " + dateFormat.format(transaction.timeCreated.getTime()));
+        Log.i("TransactionFragment", "Put " + dateFormat.format(transaction.timeCreated.getTime()));
 
         contentValues.put(TransactionsTable.AMOUNT, transaction.amount);
-        Log.i("RecordFragment", "Put " + transaction.amount);
+        Log.i("TransactionFragment", "Put " + transaction.amount);
 
         contentValues.put(TransactionsTable.TYPE, transaction.type);
-        Log.i("RecordFragment", "Put " + transaction.type);
+        Log.i("TransactionFragment", "Put " + transaction.type);
 
         dateFormat = new SimpleDateFormat(getString(R.string.database_date_format));
         contentValues.put(TransactionsTable.DATE, dateFormat.format(transaction.date.getTime()));
-        Log.i("RecordFragment", "Put " + dateFormat.format(transaction.date.getTime()));
+        Log.i("TransactionFragment", "Put " + dateFormat.format(transaction.date.getTime()));
 
         contentValues.put(TransactionsTable.DESCRIPTION, transaction.description);
-        Log.i("RecordFragment", "Put " + transaction.description);
+        Log.i("TransactionFragment", "Put " + transaction.description);
 
         contentValues.put(TransactionsTable.CATEGORY, transaction.category);
-        Log.i("RecordFragment", "Put " + transaction.category);
+        Log.i("TransactionFragment", "Put " + transaction.category);
 
         getActivity().getContentResolver().insert(EntriesProvider.TRANSACTIONS_URI, contentValues);
 

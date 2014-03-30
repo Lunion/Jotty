@@ -8,22 +8,22 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class RecordActivity extends ActionBarActivity {
-    RecordFragment recordFragment;
+public class TransactionActivity extends ActionBarActivity {
+    TransactionFragment transactionFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.record_activity);
+        setContentView(R.layout.activity_record);
 
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         if (savedInstanceState == null) {
-            recordFragment = new RecordFragment();
+            transactionFragment = new TransactionFragment();
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.add(R.id.fragment_container, recordFragment);
+            fragmentTransaction.add(R.id.fragment_container, transactionFragment);
             fragmentTransaction.commit();
         }
 
@@ -44,7 +44,7 @@ public class RecordActivity extends ActionBarActivity {
         // as you specify a parent overviewFragment in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_delete) {
-            recordFragment.deleteTransaction();
+            transactionFragment.deleteTransaction();
             return true;
         }
         return super.onOptionsItemSelected(item);

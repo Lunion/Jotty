@@ -31,11 +31,16 @@ public class HistoryFragment extends Fragment implements LoaderManager.LoaderCal
     private ExpandableListView elvDays;
     private ExpandableListCursorAdapter mAdapter;
 
+    public static HistoryFragment newInstance() {
+        HistoryFragment historyFragment = new HistoryFragment();
+        return historyFragment;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(HistoryFragment.class.getName(), "onCreateView()");
 
-        view = inflater.inflate(R.layout.overview_fragment, container, false);
+        view = inflater.inflate(R.layout.fragment_history, container, false);
 
         assert view != null;
         elvDays = (ExpandableListView) view.findViewById(R.id.overviewFragment_elvDays);
@@ -70,7 +75,7 @@ public class HistoryFragment extends Fragment implements LoaderManager.LoaderCal
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
                 Log.d("HistoryFragment", Long.toString(id));
-                Intent intent = new Intent(getActivity(), RecordActivity.class);
+                Intent intent = new Intent(getActivity(), TransactionActivity.class);
                 Uri transactionUri = Uri.parse(EntriesProvider.TRANSACTIONS_URI + "/" + id);
                 intent.putExtra(EntriesProvider.CONTENT_ITEM_TYPE, transactionUri);
                 startActivity(intent);
