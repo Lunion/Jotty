@@ -11,9 +11,14 @@ import java.util.Date;
 public abstract class Utilities {
     private static String currencyString = "$"; // TODO extract this into settings
 
-    public static Date parseDate(String dateString, String dateFormat) throws ParseException {
+    public static Date parseDate(String dateString, String dateFormat) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
-        return simpleDateFormat.parse(dateString);
+        try {
+            return simpleDateFormat.parse(dateString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static String formatDate(Date date, String dateFormat) {

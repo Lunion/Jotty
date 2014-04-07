@@ -1,4 +1,4 @@
-package com.lawenlerk.jotty;
+package com.lawenlerk.jotty.activities;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -7,6 +7,9 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.lawenlerk.jotty.R;
+import com.lawenlerk.jotty.fragments.TransactionFragment;
 
 public class TransactionActivity extends ActionBarActivity {
     TransactionFragment transactionFragment;

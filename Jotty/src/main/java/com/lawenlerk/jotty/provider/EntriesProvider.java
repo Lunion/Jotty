@@ -109,7 +109,7 @@ public class EntriesProvider extends ContentProvider {
         Log.v(EntriesProvider.class.getName(), "Starting query");
         Cursor cursor = queryBuilder.query(database, projection, selection, selectionArgs, groupBy, null, sortOrder);
         Log.v(EntriesProvider.class.getName(), "Queried from the database");
-        Log.d("EntriesProvider", Integer.toString(cursor.getCount()));
+        Log.d(EntriesProvider.class.getName(), Integer.toString(cursor.getCount()));
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
 
         return cursor;

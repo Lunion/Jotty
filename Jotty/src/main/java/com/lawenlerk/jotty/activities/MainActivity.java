@@ -1,4 +1,4 @@
-package com.lawenlerk.jotty;
+package com.lawenlerk.jotty.activities;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -10,6 +10,11 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.lawenlerk.jotty.R;
+import com.lawenlerk.jotty.fragments.HistoryFragment;
+import com.lawenlerk.jotty.fragments.NavigationDrawerFragment;
+import com.lawenlerk.jotty.fragments.OverviewFragment;
 
 
 public class MainActivity extends ActionBarActivity
@@ -46,16 +51,22 @@ public class MainActivity extends ActionBarActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         switch (position) {
             case 0:
-                fragmentManager.beginTransaction()
-                        .replace(R.id.container, OverviewFragment.newInstance())
-                        .commit();
-                Log.d(MainActivity.class.getName(), "Creating OverviewFragment");
+                OverviewFragment overviewFragment = (OverviewFragment) fragmentManager.findFragmentByTag(OverviewFragment.class.getName());
+                if (overviewFragment == null) {
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.container, OverviewFragment.newInstance(), OverviewFragment.class.getName())
+                            .commit();
+                    Log.d(MainActivity.class.getName(), "Creating OverviewFragment");
+                }
                 break;
             case 1:
-                fragmentManager.beginTransaction()
-                        .replace(R.id.container, HistoryFragment.newInstance())
-                        .commit();
-                Log.d(MainActivity.class.getName(), "Creating HistoryFragment");
+                HistoryFragment historyFragment = (HistoryFragment) fragmentManager.findFragmentByTag(HistoryFragment.class.getName());
+                if (historyFragment == null) {
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.container, HistoryFragment.newInstance(), HistoryFragment.class.getName())
+                            .commit();
+                    Log.d(MainActivity.class.getName(), "Creating HistoryFragment");
+                }
                 break;
             case 2:
                 break;

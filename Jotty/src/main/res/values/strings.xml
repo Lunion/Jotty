@@ -12,15 +12,14 @@
     <string name="custom">Custom</string>
     <string name="date_picker_placeholder">Date Picker</string>
     <string name="choose_category">Add or choose a category to finish</string>
-    <string name="date_format">EEEE, d MMMM yyyy</string>
+    <string name="date_picker_date_format">EEEE, d MMMM yyyy</string>
     <string name="loading">Loading…</string>
     <string name="action_add_transaction">Add Transaction</string>
     <string name="title_activity_record">RecordActivity</string>
     <string name="overview">Overview</string>
-    <string name="add_a_transaction">Add Transaction</string>
     <string name="database_date_format">yyyy-MM-dd</string>
     <string name="database_date_time_format">yyyy-MM-dd HH:mm:ss.SSS</string>
-    <string name="overview_date_format">d MMM <yyy />y</string>
+    <string name="overview_date_format">d MMM</string>
     <string name="title_activity_test">Test</string>
     <string name="title_overview">Overview</string>
     <string name="title_history">History</string>
@@ -35,5 +34,10 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">Example action</string>
+    <string name="day_of_week_date_format">EEEE</string>
+    <string name="title_activity_day_transactions">DayTransactionsActivity</string>
+    <string name="title_activity_day">DayActivity</string>
+    <string name="jotty_quick_add">Jotty Quick Add</string>
+    <string name="add_transaction">Add Transaction</string>
 
 </resources>

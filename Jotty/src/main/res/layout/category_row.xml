@@ -9,7 +9,7 @@
     android:paddingTop="16dp">
 
     <TextView
-        android:id="@+id/tvCategoryName"
+        android:id="@+id/tvTransactionCategory"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"

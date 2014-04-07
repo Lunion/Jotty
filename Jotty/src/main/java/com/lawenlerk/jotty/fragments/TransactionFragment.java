@@ -1,4 +1,4 @@
-package com.lawenlerk.jotty;
+package com.lawenlerk.jotty.fragments;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -26,6 +26,9 @@ import android.widget.Toast;
 
 import com.doomonafireball.betterpickers.calendardatepicker.CalendarDatePickerDialog;
 import com.doomonafireball.betterpickers.numberpicker.NumberPickerDialogFragment;
+import com.lawenlerk.jotty.R;
+import com.lawenlerk.jotty.Transaction;
+import com.lawenlerk.jotty.Utilities;
 import com.lawenlerk.jotty.database.TransactionsTable;
 import com.lawenlerk.jotty.provider.EntriesProvider;
 import com.linearlistview.LinearListView;
@@ -83,6 +86,7 @@ public class TransactionFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_transaction, container, false);
+        getActivity().setTitle(getString(R.string.add_transaction));
 
         if (view != null) {
             btAmount = (Button) view.findViewById(R.id.etAmount);
@@ -336,7 +340,7 @@ public class TransactionFragment extends Fragment
 
     private void loadCategories() {
         String[] fromColumns = {TransactionsTable.CATEGORY};
-        int[] toViews = {R.id.tvCategoryName};
+        int[] toViews = {R.id.tvTransactionCategory};
         expenseAdapter = new SimpleCursorAdapter(getActivity(), R.layout.category_row, null, fromColumns, toViews, 0);
         incomeAdapter = new SimpleCursorAdapter(getActivity(), R.layout.category_row, null, fromColumns, toViews, 0);
         getLoaderManager().initLoader(EXPENSE_LOADER, null, this);
@@ -402,7 +406,7 @@ public class TransactionFragment extends Fragment
 
     private void updateDatePicker() {
         // Format date into string
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.date_format));
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.date_picker_date_format));
         String dateString = simpleDateFormat.format(transaction.date.getTime());
         btDatePicker.setText(dateString);
 

@@ -1,12 +1,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.lawenlerk.jotty.activities.MainActivity">
-    <item
-        android:id="@+id/action_add_transaction"
-        android:icon="@drawable/ic_action_new"
-        android:title="Add Transaction"
-        app:showAsAction="always" />
+    tools:context="com.lawenlerk.jotty.activities.DayActivity">
+
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
