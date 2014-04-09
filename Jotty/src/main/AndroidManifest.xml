@@ -21,6 +21,7 @@
             </intent-filter>
         </activity>
 
+        <!--TODO Shouldn't start as new singleInstance-->
         <activity
             android:name=".activities.TransactionActivity"
             android:excludeFromRecents="true"

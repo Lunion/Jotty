@@ -1,20 +1,25 @@
 package com.lawenlerk.jotty.fragments;
 
 import android.app.Activity;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.GraphViewSeries;
+import com.jjoe64.graphview.LineGraphView;
 import com.lawenlerk.jotty.R;
-import com.lawenlerk.jotty.holographlibrary.Line;
-import com.lawenlerk.jotty.holographlibrary.LineGraph;
-import com.lawenlerk.jotty.holographlibrary.LinePoint;
-
+import com.lawenlerk.jotty.Transaction;
+import com.lawenlerk.jotty.database.TransactionsTable;
+import com.lawenlerk.jotty.provider.EntriesProvider;
 
 /**
  * A simple {@link android.support.v4.app.Fragment} subclass.
@@ -23,18 +28,22 @@ import com.lawenlerk.jotty.holographlibrary.LinePoint;
  * to handle interaction events.
  * Use the {@link OverviewFragment#newInstance} factory method to
  * create an instance of this fragment.
- *
  */
-public class OverviewFragment extends Fragment implements LoaderManager.LoaderCallbacks {
+public class OverviewFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     // TODO: Rename parameter arguments, choose names that match.
     // This can possibly be used for different layouts
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final int WEEK_LENGTH = 7;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private LineGraphView lineGraphView;
+    private GraphViewSeries graphViewSeries;
+    private GraphView.GraphViewData[] graphViewDatas;
 
     private OnFragmentInteractionListener mListener;
 
@@ -60,24 +69,24 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_overview, container, false);
-        LineGraph lgDaily = (LineGraph) view.findViewById(R.id.lgDaily);
+        assert view != null;
 
+        lineGraphView = new LineGraphView(getActivity(), "Past Month");
+        lineGraphView.setDrawDataPoints(true);
+        lineGraphView.setDataPointsRadius(15f);
 
-        Line line = new Line();
+        // Initialise the graph view with 7 (1 week) data points of y=0
+        graphViewDatas = new GraphView.GraphViewData[WEEK_LENGTH];
+        for (int i = 0; i < WEEK_LENGTH; i++) {
+            graphViewDatas[i] = new GraphView.GraphViewData(-WEEK_LENGTH + i + 1, 0);
+        }
+        graphViewSeries = new GraphViewSeries(graphViewDatas);
+        lineGraphView.addSeries(graphViewSeries);
+        LoaderManager loaderManager = getLoaderManager();
+        loaderManager.initLoader(0, null, this);
 
-        LinePoint linePoint = new LinePoint();
-        linePoint.setX(0.0);
-        linePoint.setY(1.0);
-        line.addPoint(linePoint);
-        linePoint = new LinePoint();
-        linePoint.setX(9.0);
-        linePoint.setY(3.0);
-        line.addPoint(linePoint);
-        line.setColor(getResources().getColor(R.color.expense));
-
-        lgDaily.addLine(line);
-        lgDaily.setRangeY(0, 10);
-        lgDaily.setLineToFill(0);
+        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.gvDaily);
+        linearLayout.addView(lineGraphView);
 
         // Inflate the layout for this fragment
         return view;
@@ -108,14 +117,35 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     @Override
-    public Loader onCreateLoader(int id, Bundle args) {
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        String[] projection;
+        String selection;
+        String[] selectionArgs;
+        String sortOrder;
 
-        return null;
+        projection = new String[]{
+                TransactionsTable.DATE + " AS _id",
+                TransactionsTable.DATE,
+                "SUM(" + TransactionsTable.AMOUNT + ") AS " + EntriesProvider.DAY_TOTAL
+        };
+        selection = TransactionsTable.TYPE + "=?";
+        selectionArgs = new String[]{
+                Transaction.EXPENSE
+        };
+        sortOrder = TransactionsTable.DATE + " DESC";
+
+        return new CursorLoader(getActivity(), EntriesProvider.DAYS_URI, projection, selection, selectionArgs, sortOrder);
     }
 
     @Override
-    public void onLoadFinished(Loader loader, Object data) {
-
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        if (cursor != null) {
+            while (cursor.moveToNext() && cursor.getPosition() < WEEK_LENGTH) {
+                int i = cursor.getPosition();
+                graphViewDatas[WEEK_LENGTH - 1 - i] = new GraphView.GraphViewData(-i, cursor.getDouble(cursor.getColumnIndex(EntriesProvider.DAY_TOTAL)));
+            }
+        }
+        graphViewSeries.resetData(graphViewDatas);
     }
 
     @Override
@@ -128,7 +158,7 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p>
+     * <p/>
      * See the Android Training lesson <a href=
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.

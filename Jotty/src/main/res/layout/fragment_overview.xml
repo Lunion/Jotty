@@ -2,9 +2,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.lawenlerk.jotty.holographlibrary.LineGraph
-        android:id="@+id/lgDaily"
+    <LinearLayout
+        android:id="@+id/gvDaily"
+        style="@style/card"
         android:layout_width="fill_parent"
-        android:layout_height="200dp" />
+        android:layout_height="200dp"
+        android:orientation="vertical"
+        android:padding="@dimen/card_padding" />
 
 </FrameLayout>
