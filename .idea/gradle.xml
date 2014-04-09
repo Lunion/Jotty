@@ -5,18 +5,18 @@
       <GradleProjectSettings>
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleHome" value="$USER_HOME$/gradle-1.9-all/gradle-1.9" />
+        <option name="gradleHome" value="$USER_HOME$/.gradle/wrapper/dists/gradle-1.11-all/7qd8qq8te5j4f5q9aaei3gh3lj/gradle-1.11" />
         <option name="modules">
           <set>
-            <option value="C:\Users\EnLerk\AndroidStudioProjects\Jotty" />
-            <option value="C:\Users\EnLerk\AndroidStudioProjects\Jotty\Jotty" />
-            <option value="C:\Users\EnLerk\AndroidStudioProjects\Jotty\libraries" />
-            <option value="C:\Users\EnLerk\AndroidStudioProjects\Jotty\libraries\swipelistview" />
+            <option value="C:\Users\enlerklaw\AndroidStudioProjects\Jotty" />
+            <option value="C:\Users\enlerklaw\AndroidStudioProjects\Jotty\Jotty" />
+            <option value="C:\Users\enlerklaw\AndroidStudioProjects\Jotty\libraries" />
+            <option value="C:\Users\enlerklaw\AndroidStudioProjects\Jotty\libraries\swipelistview" />
           </set>
         </option>
       </GradleProjectSettings>
     </option>
-    <option name="serviceDirectoryPath" value="$USER_HOME$/gradle-1.9-all/gradle-1.9" />
+    <option name="serviceDirectoryPath" value="$USER_HOME$/.gradle" />
   </component>
 </project>
 
