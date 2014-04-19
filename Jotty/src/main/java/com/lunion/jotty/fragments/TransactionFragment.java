@@ -1,4 +1,4 @@
-package com.lawenlerk.jotty.fragments;
+package com.lunion.jotty.fragments;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -27,11 +27,11 @@ import android.widget.Toast;
 import com.doomonafireball.betterpickers.calendardatepicker.CalendarDatePickerDialog;
 import com.doomonafireball.betterpickers.numberpicker.NumberPickerDialogFragment;
 import com.lawenlerk.jotty.R;
-import com.lawenlerk.jotty.Transaction;
-import com.lawenlerk.jotty.Utilities;
-import com.lawenlerk.jotty.database.TransactionsTable;
-import com.lawenlerk.jotty.provider.EntriesProvider;
 import com.linearlistview.LinearListView;
+import com.lunion.jotty.Transaction;
+import com.lunion.jotty.Utilities;
+import com.lunion.jotty.database.TransactionsTable;
+import com.lunion.jotty.provider.EntriesProvider;
 
 import java.text.DateFormat;
 import java.text.ParseException;

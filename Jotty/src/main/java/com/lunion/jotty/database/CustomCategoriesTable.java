@@ -1,10 +1,10 @@
-package com.lawenlerk.jotty.database;
+package com.lunion.jotty.database;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.lawenlerk.jotty.Transaction;
+import com.lunion.jotty.Transaction;
 
 /**
  * Created by EnLerk on 3/8/14.

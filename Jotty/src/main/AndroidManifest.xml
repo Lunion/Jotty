@@ -11,7 +11,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".activities.MainActivity"
+            android:name="com.lunion.jotty.activities.MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,11 +23,11 @@
 
         <!--TODO Shouldn't start as new singleInstance-->
         <activity
-            android:name=".activities.TransactionActivity"
+            android:name="com.lunion.jotty.activities.TransactionActivity"
             android:excludeFromRecents="true"
             android:label="@string/jotty_quick_add"
             android:launchMode="singleInstance"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName="com.lunion.jotty.activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="MainActivity" />
@@ -38,8 +38,8 @@
         </activity>
 
         <provider
-            android:name="com.lawenlerk.jotty.provider.EntriesProvider"
-            android:authorities="com.lawenlerk.jotty.provider" />
+            android:name="com.lunion.jotty.provider.EntriesProvider"
+            android:authorities="com.lunion.jotty.provider" />
 
     </application>
 

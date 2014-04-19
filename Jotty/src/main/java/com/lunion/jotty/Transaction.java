@@ -1,4 +1,4 @@
-package com.lawenlerk.jotty;
+package com.lunion.jotty;
 
 import java.util.Calendar;
 

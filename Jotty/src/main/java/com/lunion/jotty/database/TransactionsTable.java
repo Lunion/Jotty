@@ -1,4 +1,4 @@
-package com.lawenlerk.jotty.database;
+package com.lunion.jotty.database;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;

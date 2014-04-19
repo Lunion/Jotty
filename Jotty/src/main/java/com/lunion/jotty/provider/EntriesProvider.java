@@ -1,4 +1,4 @@
-package com.lawenlerk.jotty.provider;
+package com.lunion.jotty.provider;
 
 import android.content.ContentProvider;
 import android.content.ContentResolver;
@@ -11,9 +11,9 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.lawenlerk.jotty.database.CustomCategoriesTable;
-import com.lawenlerk.jotty.database.EntriesDatabaseHelper;
-import com.lawenlerk.jotty.database.TransactionsTable;
+import com.lunion.jotty.database.CustomCategoriesTable;
+import com.lunion.jotty.database.EntriesDatabaseHelper;
+import com.lunion.jotty.database.TransactionsTable;
 
 /**
  * Created by enlerklaw on 2/25/14.
@@ -28,7 +28,7 @@ public class EntriesProvider extends ContentProvider {
     private static final int TRANSACTION_ID = 2;
     private static final int CATEGORIES = 3;
     private static final int DAYS = 4;
-    private static final String AUTHORITY = "com.lawenlerk.jotty.provider";
+    private static final String AUTHORITY = "com.lunion.jotty.provider";
     public static final Uri TRANSACTIONS_URI = Uri.parse("content://" + AUTHORITY + "/" + TransactionsTable.TABLE_NAME);
     public static final Uri CATEGORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + "categories");  // For convenience to utilise groupby
     public static final Uri DAYS_URI = Uri.parse("content://" + AUTHORITY + "/" + TransactionsTable.TABLE_NAME + "/" + "days"); // For convenience to utilise groupby

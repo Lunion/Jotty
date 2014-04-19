@@ -4,4 +4,4 @@
     android:layout_height="match_parent"
     android:background="@android:color/white"
     android:choiceMode="singleChoice"
-    tools:context="com.lawenlerk.jotty.fragments.NavigationDrawerFragment" />
+    tools:context="com.lunion.jotty.fragments.NavigationDrawerFragment" />

@@ -1,4 +1,4 @@
-package com.lawenlerk.jotty.fragments;
+package com.lunion.jotty.fragments;
 
 import android.app.Activity;
 import android.database.Cursor;
@@ -17,9 +17,9 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.LineGraphView;
 import com.lawenlerk.jotty.R;
-import com.lawenlerk.jotty.Transaction;
-import com.lawenlerk.jotty.database.TransactionsTable;
-import com.lawenlerk.jotty.provider.EntriesProvider;
+import com.lunion.jotty.Transaction;
+import com.lunion.jotty.database.TransactionsTable;
+import com.lunion.jotty.provider.EntriesProvider;
 
 /**
  * A simple {@link android.support.v4.app.Fragment} subclass.

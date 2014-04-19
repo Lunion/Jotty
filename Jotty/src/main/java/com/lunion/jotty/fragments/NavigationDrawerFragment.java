@@ -1,4 +1,4 @@
-package com.lawenlerk.jotty.fragments;
+package com.lunion.jotty.fragments;
 
 import android.app.Activity;
 import android.content.SharedPreferences;

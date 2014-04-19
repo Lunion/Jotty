@@ -1,4 +1,4 @@
-package com.lawenlerk.jotty.activities;
+package com.lunion.jotty.activities;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -12,9 +12,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.lawenlerk.jotty.R;
-import com.lawenlerk.jotty.fragments.HistoryFragment;
-import com.lawenlerk.jotty.fragments.NavigationDrawerFragment;
-import com.lawenlerk.jotty.fragments.OverviewFragment;
+import com.lunion.jotty.fragments.HistoryFragment;
+import com.lunion.jotty.fragments.NavigationDrawerFragment;
+import com.lunion.jotty.fragments.OverviewFragment;
 
 
 public class MainActivity extends ActionBarActivity

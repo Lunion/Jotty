@@ -1,4 +1,4 @@
-package com.lawenlerk.jotty.fragments;
+package com.lunion.jotty.fragments;
 
 
 import android.content.Context;
@@ -21,11 +21,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.lawenlerk.jotty.R;
-import com.lawenlerk.jotty.Transaction;
-import com.lawenlerk.jotty.Utilities;
-import com.lawenlerk.jotty.activities.TransactionActivity;
-import com.lawenlerk.jotty.database.TransactionsTable;
-import com.lawenlerk.jotty.provider.EntriesProvider;
+import com.lunion.jotty.Transaction;
+import com.lunion.jotty.Utilities;
+import com.lunion.jotty.activities.TransactionActivity;
+import com.lunion.jotty.database.TransactionsTable;
+import com.lunion.jotty.provider.EntriesProvider;
 
 import java.util.Date;
 
