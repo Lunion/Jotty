@@ -8,7 +8,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.lawenlerk.jotty.R;
+import com.lunion.jotty.R;
 import com.lunion.jotty.fragments.TransactionFragment;
 
 public class TransactionActivity extends ActionBarActivity {

@@ -16,10 +16,14 @@ import android.widget.LinearLayout;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.LineGraphView;
-import com.lawenlerk.jotty.R;
+import com.lunion.jotty.R;
 import com.lunion.jotty.Transaction;
+import com.lunion.jotty.Utilities;
 import com.lunion.jotty.database.TransactionsTable;
 import com.lunion.jotty.provider.EntriesProvider;
+
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * A simple {@link android.support.v4.app.Fragment} subclass.
@@ -139,11 +143,31 @@ public class OverviewFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        populateGraphView(cursor);
+    }
+
+    private void populateGraphView(Cursor cursor) {
+        // We have 2 "cursors", one is along the x-axis of the graph (right to left),
+        // the other is our actual cursor pointing at data in descending order of date.
+        // We will iterate through the x-axis from right to left, if the corresponding date is
+        // equivalent or less than the data that our data cursor points to, we will move the
+        // data cursor by 1 step.
+
         if (cursor != null) {
-            while (cursor.moveToNext() && cursor.getPosition() < WEEK_LENGTH) {
+            // Find out the date today
+            Date date = new Date();
+
+            for (int i=0; i < WEEK_LENGTH; i++) {
+
+
+
+                // Check and see if today's date is the same
+            }
+
+/*            while (cursor.moveToNext() && cursor.getPosition() < WEEK_LENGTH) {
                 int i = cursor.getPosition();
                 graphViewDatas[WEEK_LENGTH - 1 - i] = new GraphView.GraphViewData(-i, cursor.getDouble(cursor.getColumnIndex(EntriesProvider.DAY_TOTAL)));
-            }
+            }*/
         }
         graphViewSeries.resetData(graphViewDatas);
     }

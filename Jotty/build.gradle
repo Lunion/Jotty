@@ -29,5 +29,5 @@ dependencies {
     compile 'com.nhaarman.listviewanimations:library:2.6.0'
     //    compile project(':libraries:swipelistview')
     compile 'com.doomonafireball.betterpickers:library:1.5.2'
-    compile files('C:/Users/EnLerk/AndroidStudioProjects/Jotty/libraries/GraphView-3.1.1.jar')
+    compile files('libs/GraphView-3.1.1.jar')
 }

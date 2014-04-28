@@ -20,7 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.lawenlerk.jotty.R;
+import com.lunion.jotty.R;
 import com.lunion.jotty.Transaction;
 import com.lunion.jotty.Utilities;
 import com.lunion.jotty.activities.TransactionActivity;

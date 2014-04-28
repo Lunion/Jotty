@@ -62,6 +62,21 @@ public abstract class Utilities {
         return key;
     }
 
+    public static boolean sameDay(Date dateA, Date dateB) {
+        Calendar calendarA = Calendar.getInstance();
+        calendarA.setTime(dateA);
+
+        Calendar calendarB = Calendar.getInstance();
+        calendarB.setTime(dateB);
+
+        if ((calendarA.get(Calendar.DAY_OF_YEAR) == calendarB.get(Calendar.DAY_OF_YEAR)) &&
+                calendarA.get(Calendar.YEAR) == calendarB.get(Calendar.YEAR)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public static String formatCurrency(double total) {
         return addCurrencyString(toDecimals(total, 2));
     }

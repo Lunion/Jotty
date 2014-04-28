@@ -26,7 +26,7 @@ import android.widget.Toast;
 
 import com.doomonafireball.betterpickers.calendardatepicker.CalendarDatePickerDialog;
 import com.doomonafireball.betterpickers.numberpicker.NumberPickerDialogFragment;
-import com.lawenlerk.jotty.R;
+import com.lunion.jotty.R;
 import com.linearlistview.LinearListView;
 import com.lunion.jotty.Transaction;
 import com.lunion.jotty.Utilities;

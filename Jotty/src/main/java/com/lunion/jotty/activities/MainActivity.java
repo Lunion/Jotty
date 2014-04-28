@@ -11,7 +11,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.lawenlerk.jotty.R;
+import com.lunion.jotty.R;
 import com.lunion.jotty.fragments.HistoryFragment;
 import com.lunion.jotty.fragments.NavigationDrawerFragment;
 import com.lunion.jotty.fragments.OverviewFragment;
